@@ -35,7 +35,7 @@ ul {
 
 /* listaelemek megjelenésének beállítása */
 li {
-	list-style-image:url('../kepek/mancs.png');		/* egyedi felsorolásjel beállítása */
+	list-style-image:url('images/mancs.png');		/* egyedi felsorolásjel beállítása */
 	color:white;		/* fehér szövegszín */
 	margin-left:40px;	/* bal margó */
 	line-height:40px;	/* sor magasságának beállítása */
