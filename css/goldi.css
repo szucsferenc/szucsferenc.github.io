@@ -29,8 +29,8 @@ body {
 /* felsoroláslisták megjelenésének beállítása */
 ul {
 	background-color:black;	/* fekete háttérszín*/
-	margin:0;				/* margó lenullázása */ 
-	padding:30px;			/* belső kitöltés */
+	margin:0;		/* margó lenullázása */ 
+	padding:30px;		/* belső kitöltés */
 }
 
 /* listaelemek megjelenésének beállítása */
