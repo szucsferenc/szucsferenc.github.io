@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="hu" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel alapok</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        excel: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#16a34a',
+                            600: '#107c41', // Official Excel Green
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-12">
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-excel-600 text-white rounded-xl shadow-md">
+                    <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 leading-tight text-lg sm:text-xl">Excel alapok interaktív jegyzet</h1>
+                    <p class="text-xs text-slate-500 hidden sm:block">Tanulási segédlet az Excel táblázatkezelő programhoz</p>
+                </div>
+            </div>
+            
+            <!-- Quick Navigation Pills -->
+            <nav class="hidden md:flex items-center space-x-1 text-xs font-medium">
+                <a href="#alapfogalmak" class="px-3 py-1.5 rounded-full hover:bg-excel-50 text-slate-600 hover:text-excel-700 transition-colors">Alapfogalmak</a>
+                <a href="#adattipusok" class="px-3 py-1.5 rounded-full hover:bg-excel-50 text-slate-600 hover:text-excel-700 transition-colors">Adattípusok</a>
+                <a href="#cellatartalom" class="px-3 py-1.5 rounded-full hover:bg-excel-50 text-slate-600 hover:text-excel-700 transition-colors">Cellatartalom</a>
+                <a href="#hivatkozasok" class="px-3 py-1.5 rounded-full hover:bg-excel-50 text-slate-600 hover:text-excel-700 transition-colors">Hivatkozások</a>
+                <a href="#navigacio" class="px-3 py-1.5 rounded-full hover:bg-excel-50 text-slate-600 hover:text-excel-700 transition-colors">Navigáció</a>
+                <a href="#kviz" class="px-3.5 py-1.5 rounded-full bg-excel-600 text-white hover:bg-excel-700 transition-all shadow-sm">Tudáspróba</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
+        <div class="bg-gradient-to-r from-excel-800 via-excel-700 to-emerald-800 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                <i data-lucide="table" class="w-96 h-96"></i>
+            </div>
+            <div class="relative z-10 max-w-3xl">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-semibold text-emerald-200 mb-4 border border-white/20">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Vizuális útmutató kezdőknek és haladóknak
+                </span>
+                <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight mb-4">
+                    Alapismeretek az Excelről <span class="text-emerald-300">egyetlen</span> átlátható lapon.
+                </h2>
+                <p class="text-emerald-100 text-base sm:text-lg mb-6 leading-relaxed">
+                    Értsd meg a cellák, hivatkozások, képletek és billentyűkombinációk működését gyakorlati példákkal és interaktív szimulációkkal!
+                </p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-white/10 text-center sm:text-left">
+                    <div>
+                        <div class="text-xl sm:text-2xl font-bold text-white">1 048 576</div>
+                        <div class="text-xs text-emerald-200">sor munkalaponként</div>
+                    </div>
+                    <div>
+                        <div class="text-xl sm:text-2xl font-bold text-white">16 384</div>
+                        <div class="text-xs text-emerald-200">oszlop munkalaponként</div>
+                    </div>
+                    <div>
+                        <div class="text-xl sm:text-2xl font-bold text-white">3 hivatkozás</div>
+                        <div class="text-xs text-emerald-200">relatív, abszolút, vegyes</div>
+                    </div>
+                    <div>
+                        <div class="text-xl sm:text-2xl font-bold text-white">F4 billentyű</div>
+                        <div class="text-xs text-emerald-200">hivatkozás rögzítése</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+
+        <!-- SECTION 1: ALAPFOGALMAK (ANATÓMIA) -->
+        <section id="alapfogalmak" class="scroll-mt-20">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2.5 bg-excel-100 text-excel-700 rounded-xl">
+                    <i data-lucide="layout-grid" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">1. Az Excel anatómiája és alapfogalmak</h2>
+                    <p class="text-sm text-slate-500">Kattints az elemekre vagy a rácsra a működés kipróbálásához!</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Interactive Grid Visualizer -->
+                <div class="lg:col-span-7 glass-card rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                                <i data-lucide="mouse-pointer-click" class="w-4 h-4 text-excel-600"></i>
+                                Interaktív munkalap szimulátor
+                            </h3>
+                            <span class="text-xs px-2.5 py-1 bg-emerald-100 text-excel-800 rounded-md font-mono font-semibold" id="selected-cell-badge">Kijelölve: C3</span>
+                        </div>
+
+                        <!-- Mini Sheet Simulation -->
+                        <div class="border border-slate-300 rounded-lg overflow-hidden font-mono text-xs shadow-inner bg-white">
+                            <!-- Formula Bar Mockup -->
+                            <div class="bg-slate-100 border-b border-slate-200 px-3 py-1.5 flex items-center gap-2 text-slate-600">
+                                <span class="font-bold text-slate-500 px-1 border-r border-slate-300 pr-2" id="fx-cell-name">C3</span>
+                                <span class="text-excel-600 font-bold">fx</span>
+                                <input type="text" id="fx-cell-value" readonly value="1500" class="w-full bg-white border border-slate-200 rounded px-2 py-0.5 text-slate-800 font-mono text-xs focus:outline-none">
+                            </div>
+
+                            <!-- Grid Table Header -->
+                            <div class="grid grid-cols-5 bg-slate-200 text-slate-600 text-center font-bold border-b border-slate-300">
+                                <div class="py-1 border-r border-slate-300 bg-slate-300/50">#</div>
+                                <div class="py-1 border-r border-slate-300 hover:bg-excel-100 cursor-pointer" onclick="highlightCol('A')">A</div>
+                                <div class="py-1 border-r border-slate-300 hover:bg-excel-100 cursor-pointer" onclick="highlightCol('B')">B</div>
+                                <div class="py-1 border-r border-slate-300 hover:bg-excel-100 cursor-pointer" onclick="highlightCol('C')">C</div>
+                                <div class="py-1 hover:bg-excel-100 cursor-pointer" onclick="highlightCol('D')">D</div>
+                            </div>
+
+                            <!-- Grid Rows -->
+                            <!-- Row 1 -->
+                            <div class="grid grid-cols-5 border-b border-slate-200 text-center">
+                                <div class="py-1.5 bg-slate-100 font-bold border-r border-slate-300 text-slate-500 hover:bg-excel-100 cursor-pointer" onclick="highlightRow(1)">1</div>
+                                <div class="py-1.5 border-r border-slate-200 cursor-pointer hover:bg-slate-50 cell-item" data-cell="A1" data-val="Termék">Termék</div>
+                                <div class="py-1.5 border-r border-slate-200 cursor-pointer hover:bg-slate-50 cell-item" data-cell="B1" data-val="Egységár">Egységár</div>
+                                <div class="py-1.5 border-r border-slate-200 cursor-pointer hover:bg-slate-50 cell-item" data-cell="C1" data-val="Mennyiség">Mennyiség</div>
+                                <div class="py-1.5 cursor-pointer hover:bg-slate-50 cell-item" data-cell="D1" data-val="Összesen">Összesen</div>
+                            </div>
+                            <!-- Row 2 -->
+                            <div class="grid grid-cols-5 border-b border-slate-200 text-center">
+                                <div class="py-1.5 bg-slate-100 font-bold border-r border-slate-300 text-slate-500 hover:bg-excel-100 cursor-pointer" onclick="highlightRow(2)">2</div>
+                                <div class="py-1.5 border-r border-slate-200 cursor-pointer hover:bg-slate-50 cell-item" data-cell="A2" data-val="Monitor">Monitor</div>
+                                <div class="py-1.5 border-r border-slate-200 cursor-pointer hover:bg-slate-50 cell-item" data-cell="B2" data-val="45000">45000</div>
+                                <div class="py-1.5 border-r border-slate-200 cursor-pointer hover:bg-slate-50 cell-item" data-cell="C2" data-val="2">2</div>
+                                <div class="py-1.5 cursor-pointer hover:bg-slate-50 cell-item" data-cell="D2" data-val="=B2*C2">=B2*C2</div>
+                            </div>
+                            <!-- Row 3 -->
+                            <div class="grid grid-cols-5 border-b border-slate-200 text-center">
+                                <div class="py-1.5 bg-slate-100 font-bold border-r border-slate-300 text-slate-500 hover:bg-excel-100 cursor-pointer" onclick="highlightRow(3)">3</div>
+                                <div class="py-1.5 border-r border-slate-200 cursor-pointer hover:bg-slate-50 cell-item" data-cell="A3" data-val="Billentyűzet">Billentyűzet</div>
+                                <div class="py-1.5 border-r border-slate-200 cursor-pointer hover:bg-slate-50 cell-item" data-cell="B3" data-val="8500">8500</div>
+                                <div class="py-1.5 border-r border-slate-200 cursor-pointer hover:bg-slate-50 cell-item bg-excel-100 ring-2 ring-excel-600 z-10" data-cell="C3" data-val="1500">1500</div>
+                                <div class="py-1.5 cursor-pointer hover:bg-slate-50 cell-item" data-cell="D3" data-val="=SZUM(D2:D2)">=SZUM(...)</div>
+                            </div>
+                        </div>
+
+                        <!-- Workbook Tabs Mockup -->
+                        <div class="mt-2 bg-slate-200 rounded-b-lg p-1.5 flex items-center gap-1 text-xs">
+                            <span class="px-3 py-1 bg-white text-excel-700 font-bold rounded border-t-2 border-excel-600 shadow-sm flex items-center gap-1">
+                                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Január (aktív munkalap)
+                            </span>
+                            <span class="px-3 py-1 text-slate-600 hover:bg-slate-300 rounded cursor-pointer">Február</span>
+                            <span class="px-3 py-1 text-slate-600 hover:bg-slate-300 rounded cursor-pointer">Március</span>
+                            <span class="ml-auto text-slate-400 text-[10px]">Pénzügyi_kimutatás_2026.xlsx (munkafüzet)</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-excel-800">
+                        <strong class="font-semibold block mb-1">💡 Mit látsz a fenti képernyőn?</strong>
+                        <span id="interactive-explanation">A kijelölt cella koordinátája <strong>C3</strong> (C oszlop, 3. sor). A benne lévő érték 1500. A munkalapok fülei alul találhatók, melyek együtt alkotják a Munkafüzetet.</span>
+                    </div>
+
+                    <!-- Oszlop, Sor, Cella -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="glass-card p-3 rounded-xl text-center">
+                            <i data-lucide="split-square-horizontal" class="w-4 h-4 mx-auto text-excel-600 mb-1"></i>
+                            <h5 class="font-bold text-xs text-slate-800">Oszlop</h5>
+                            <p class="text-[11px] text-slate-500 mt-0.5">függőleges<br><span class="font-mono font-semibold text-excel-700">A-tól XFD-ig</span></p>
+                        </div>
+                        <div class="glass-card p-3 rounded-xl text-center">
+                            <i data-lucide="split-square-vertical" class="w-4 h-4 mx-auto text-excel-600 mb-1"></i>
+                            <h5 class="font-bold text-xs text-slate-800">Sor</h5>
+                            <p class="text-[11px] text-slate-500 mt-0.5">vízszintes<br><span class="font-mono font-semibold text-excel-700">1 - 1 048 576</span></p>
+                        </div>
+                        <div class="glass-card p-3 rounded-xl text-center">
+                            <i data-lucide="box" class="w-4 h-4 mx-auto text-excel-600 mb-1"></i>
+                            <h5 class="font-bold text-xs text-slate-800">Cella</h5>
+                            <p class="text-[11px] text-slate-500 mt-0.5">metszéspont<br><span class="font-mono font-semibold text-excel-700">pl. C5</span></p>
+                        </div>
+                    </div>
+
+                    
+                </div>
+
+                <!-- Concept Cards Grid -->
+                <div class="lg:col-span-5 space-y-3">
+                    <!-- Munkafüzet Card -->
+                    <div class="glass-card p-4 rounded-xl hover:border-excel-500 transition-all shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <div class="p-2 bg-blue-100 text-blue-700 rounded-lg shrink-0">
+                                <i data-lucide="book-open" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">Munkafüzet</h4>
+                                <p class="text-xs text-slate-600 mt-1">Az Excel elsődleges `.xlsx` kiterjesztésű fájlja. Ez tartalmazhat egy vagy több munkalapot.</p>
+                                <code class="text-[11px] bg-slate-100 text-blue-800 px-2 py-0.5 rounded mt-1.5 inline-block font-mono">Pénzügyi_kimutatás_2026.xlsx</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Munkalap Card -->
+                    <div class="glass-card p-4 rounded-xl hover:border-excel-500 transition-all shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <div class="p-2 bg-emerald-100 text-emerald-700 rounded-lg shrink-0">
+                                <i data-lucide="layers" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">Munkalap (Worksheet)</h4>
+                                <p class="text-xs text-slate-600 mt-1">Egybefüggő rácshálózat a munkafüzeten belül. Alul lapfülekkel váltogathatunk közöttük.</p>
+                                <div class="flex gap-1 mt-1.5">
+                                    <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">Január</span>
+                                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">Február</span>
+                                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">Március</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                            <!-- Aktív cella Card -->
+                            <div class="glass-card p-4 rounded-xl hover:border-excel-500 transition-all shadow-sm">
+                                <div class="flex items-start gap-3">
+                                    <div class="p-2 bg-emerald-100 text-emerald-700 rounded-lg shrink-0">
+                                        <i data-lucide="focus" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm">Aktív cella</h4>
+                                        <p class="text-xs text-slate-600 mt-1">Az a kijelölt cella, amelyben éppen dolgozol. Vastag szegély jelöli, és címe megjelenik a Név mezőben.</p>
+                                        <code class="text-[11px] bg-slate-100 text-emerald-800 px-2 py-0.5 rounded mt-1.5 inline-block font-mono">Név mező: A1</code>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Kitöltőnégyzet Card -->
+                            <div class="glass-card p-4 rounded-xl hover:border-excel-500 transition-all shadow-sm">
+                                <div class="flex items-start gap-3">
+                                    <div class="p-2 bg-emerald-100 text-emerald-700 rounded-lg shrink-0">
+                                        <i data-lucide="plus-square" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm">Kitöltőnégyzet</h4>
+                                        <p class="text-xs text-slate-600 mt-1">A kijelölt cella jobb alsó sarkában lévő kis négyzet, mellyel képleteket és sorozatokat másolhatsz automatikusan.</p>
+                                        <code class="text-[11px] bg-slate-100 text-emerald-800 px-2 py-0.5 rounded mt-1.5 inline-block font-mono">Hétfő ➔ Kedd, Szerda, Csütörtök...</code>
+                                    </div>
+                                </div>
+                            </div> 
+                    
+                    <!-- Oszlop, Sor, Cella -->
+                    <!--
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="glass-card p-3 rounded-xl text-center">
+                            <i data-lucide="split-square-vertical" class="w-4 h-4 mx-auto text-excel-600 mb-1"></i>
+                            <h5 class="font-bold text-xs text-slate-800">Oszlop</h5>
+                            <p class="text-[11px] text-slate-500 mt-0.5">függőleges<br><span class="font-mono font-semibold text-excel-700">A-tól XFD-ig</span></p>
+                        </div>
+                        <div class="glass-card p-3 rounded-xl text-center">
+                            <i data-lucide="split-square-horizontal" class="w-4 h-4 mx-auto text-excel-600 mb-1"></i>
+                            <h5 class="font-bold text-xs text-slate-800">Sor</h5>
+                            <p class="text-[11px] text-slate-500 mt-0.5">vízszintes<br><span class="font-mono font-semibold text-excel-700">1 - 1 048 576</span></p>
+                        </div>
+                        <div class="glass-card p-3 rounded-xl text-center">
+                            <i data-lucide="box" class="w-4 h-4 mx-auto text-excel-600 mb-1"></i>
+                            <h5 class="font-bold text-xs text-slate-800">Cella</h5>
+                            <p class="text-[11px] text-slate-500 mt-0.5">metszéspont<br><span class="font-mono font-semibold text-excel-700">pl. C5</span></p>
+                        </div>
+                    </div>
+                    -->
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ADATTÍPUSOK -->
+        <section id="adattipusok" class="scroll-mt-20">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2.5 bg-blue-100 text-blue-700 rounded-xl">
+                    <i data-lucide="binary" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">2. Adattípusok és igazítási szabályok</h2>
+                    <p class="text-sm text-slate-500">Az Excel automatikusan felismeri a beírt adatokat és a cella meghatározott oldalára igazítja őket.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- Szám Card -->
+                <div class="glass-card p-5 rounded-2xl border-t-4 border-t-blue-500 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-1 rounded">Matematikai</span>
+                        <i data-lucide="calculator" class="w-5 h-5 text-blue-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">Szám (Number)</h3>
+                    <p class="text-xs text-slate-600 mb-4">Műveletekre alkalmas értékek. Magyar nyelvi beállításnál a tizedesjel a <strong>vessző ( , )</strong>!</p>
+                    
+                    <!-- Visual Cell Preview -->
+                    <div class="bg-slate-100 border border-slate-300 rounded-lg p-2 font-mono text-sm mb-3">
+                        <div class="text-[10px] text-slate-400 mb-0.5">Cellában megjelenés (jobbra igazítva):</div>
+                        <div class="bg-white p-1.5 border border-slate-200 rounded text-right text-slate-900 font-bold">1 500,50</div>
+                    </div>
+                    <div class="text-[11px] text-slate-500 bg-slate-50 p-2 rounded border border-slate-200">
+                        <strong>Példák:</strong> <code class="text-blue-700">1500</code>, <code class="text-blue-700">-45</code>, <code class="text-blue-700">3,14</code>
+                    </div>
+                </div>
+
+                <!-- Szöveg Card -->
+                <div class="glass-card p-5 rounded-2xl border-t-4 border-t-amber-500 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded">Karakterlánc</span>
+                        <i data-lucide="type" class="w-5 h-5 text-amber-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">Szöveg (Text)</h3>
+                    <p class="text-xs text-slate-600 mb-4">Betűk, szavak, leíró elemek. Közvetlen matematikai műveletek nem végezhetők velük.</p>
+                    
+                    <!-- Visual Cell Preview -->
+                    <div class="bg-slate-100 border border-slate-300 rounded-lg p-2 font-mono text-sm mb-3">
+                        <div class="text-[10px] text-slate-400 mb-0.5">Cellában megjelenés (balra igazítva):</div>
+                        <div class="bg-white p-1.5 border border-slate-200 rounded text-left text-slate-900 font-bold">Monitor XL</div>
+                    </div>
+                    <div class="text-[11px] text-slate-500 bg-slate-50 p-2 rounded border border-slate-200">
+                        <strong>Példák:</strong> <code class="text-amber-700">Terméknév</code>, <code class="text-amber-700">Budapest</code>
+                    </div>
+                </div>
+
+                <!-- Logikai érték Card -->
+                <div class="glass-card p-5 rounded-2xl border-t-4 border-t-purple-500 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-2 py-1 rounded">Feltételes</span>
+                        <i data-lucide="toggle-left" class="w-5 h-5 text-purple-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">Logikai (Boolean)</h3>
+                    <p class="text-xs text-slate-600 mb-4">Két lehetséges állapota van: IGAZ vagy HAMIS. Feltételvizsgálatok eredménye.</p>
+                    
+                    <!-- Visual Cell Preview -->
+                    <div class="bg-slate-100 border border-slate-300 rounded-lg p-2 font-mono text-sm mb-3">
+                        <div class="text-[10px] text-slate-400 mb-0.5">Cellában megjelenés (középre):</div>
+                        <div class="bg-white p-1.5 border border-slate-200 rounded text-center text-slate-900 font-bold">IGAZ</div>
+                    </div>
+                    <div class="text-[11px] text-slate-500 bg-slate-50 p-2 rounded border border-slate-200">
+                        <strong>Képlet példa:</strong> <code class="text-purple-700">=A1>10</code> <br><span class="text-slate-400 font-normal">(IGAZ, ha A1 tartalma nagyobb 10-nél)<span>
+                    </div>
+                </div>
+
+                <!-- Dátum és idő Card -->
+                <div class="glass-card p-5 rounded-2xl border-t-4 border-t-emerald-500 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-1 rounded">Sorszám alapú</span>
+                        <i data-lucide="calendar" class="w-5 h-5 text-emerald-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">Dátum és idő</h3>
+                    <p class="text-xs text-slate-600 mb-4">A háttérben sorszámként tárolódik (1900.01.01-től eltelt napok száma), így pl. kivonhatók egymásból!</p>
+                    
+                    <!-- Visual Cell Preview -->
+                    <div class="bg-slate-100 border border-slate-300 rounded-lg p-2 font-mono text-sm mb-3">
+                        <div class="text-[10px] text-slate-400 mb-0.5">Cellában megjelenés (jobbra igazítva):</div>
+                        <div class="bg-white p-1.5 border border-slate-200 rounded text-right text-slate-900 font-bold">2026.10.15</div>
+                    </div>
+                    <div class="text-[11px] text-slate-500 bg-slate-50 p-2 rounded border border-slate-200">
+                        <strong>Példák:</strong> <code class="text-emerald-700">2026.10.15</code>, <code class="text-emerald-700">14:30</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CELLATARTALOM -->
+        <section id="cellatartalom" class="scroll-mt-20">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2.5 bg-amber-100 text-amber-700 rounded-xl">
+                    <i data-lucide="variable" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">3. Cellatartalom építőkövei</h2>
+                    <p class="text-sm text-slate-500">A cellába írt tartalom lehet közvetlen adat vagy kiszámított érték.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Konstansok vs Hivatkozások -->
+                <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="git-commit" class="w-5 h-5 text-amber-600"></i>
+                        Konstansok és hivatkozások
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <span class="text-xs font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">Konstans (közvetlen érték)</span>
+                            <p class="text-xs text-slate-600 mt-2">Olyan adat, amelyet manuálisan gépelünk be, és semmilyen más cellától nem függ. Nem változik automatikusan.</p>
+                            <div class="mt-2 text-xs font-mono bg-white p-2 rounded border border-slate-300 text-slate-800">
+                                <code>5000</code> vagy <code>"Eladva"</code>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <span class="text-xs font-bold text-blue-800 bg-blue-100 px-2 py-0.5 rounded">Hivatkozás (dinamikus)</span>
+                            <p class="text-xs text-slate-600 mt-2">Egy másik cella értékét veszi át. Ha a forráscella megváltozik, ez a cella is azonnal frissül!</p>
+                            <div class="mt-2 text-xs font-mono bg-white p-2 rounded border border-slate-300 text-blue-700 font-bold">
+                                <code>=A1</code> <span class="text-slate-400 font-normal">(A B2 cellába írva átveszi az A1 tartalmát.)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Képletek vs Függvények -->
+                <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="function-square" class="w-5 h-5 text-excel-600"></i>
+                        Képletek és függvények
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">Képlet (Formula)</span>
+                                <span class="text-xs font-mono font-bold text-red-600">MINDIG '=' jellel kezdődik!</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-2">A felhasználó által megadott matematikai műveletek sora (+, -, *, /).</p>
+                            <div class="mt-2 text-xs font-mono bg-white p-2 rounded border border-slate-300 text-emerald-700 font-bold">
+                                <code>=A1+B1*2</code> vagy <code>=(C3-D3)/100</code>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-2">A képletek tartalmazhatnak függvényeket, hivatkozásokat, konstansokat.</p>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <span class="text-xs font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded">Függvény (beépített eljárás)</span>
+                            <p class="text-xs text-slate-600 mt-2">Névből és zárójelbe tett argumentumokból álló előre beépített számítás.</p>
+                            <div class="mt-2 text-xs font-mono bg-white p-2 rounded border border-slate-300 text-purple-700 font-bold">
+                                <code>=SZUM(A1:A10)</code> <span class="text-slate-400 font-normal">(Összeadja az A1-A10 tartományt.)</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-2">A függvények tartalmazhatnak más függvényeket, képleteket, hivatkozásokat, konstansokat.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: HIVATKOZÁSTÍPUSOK (INTERAKTÍV SIMULATOR) -->
+        <section id="hivatkozasok" class="scroll-mt-20">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2.5 bg-excel-600 text-white rounded-xl shadow-md">
+                    <i data-lucide="lock" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">4. Hivatkozástípusok és a "dollárjel" ($)</h2>
+                    <p class="text-sm text-slate-500">Próbáld ki az <kbd class="px-1.5 py-0.5 bg-slate-200 border border-slate-300 rounded font-mono text-xs">F4</kbd> billentyű működését a rögzítéshez!</p>
+                </div>
+            </div>
+
+            <!-- Interactive Reference Switcher Card -->
+            <div class="glass-card rounded-2xl p-6 shadow-sm border border-excel-200">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <!-- Left: Control & Explanation -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <h3 class="text-lg font-bold text-slate-900">Melyik része van rögzítve?</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            A dollárjel (<code class="text-excel-700 font-bold">$</code>) rögzíti az mögötte álló elemet a képlet másolásakor. Nyomd meg az <strong>F4</strong> gombot a típusok közötti váltáshoz!
+                        </p>
+
+                        <!-- Interactive Selector Buttons -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="setRefType('relative')" id="btn-ref-rel" class="px-3 py-2 rounded-xl text-xs font-bold border border-excel-600 bg-excel-600 text-white shadow-sm transition-all text-left">
+                                <div>Relatív</div>
+                                <div class="font-mono text-[11px] opacity-90">A1</div>
+                            </button>
+                            <button onclick="setRefType('absolute')" id="btn-ref-abs" class="px-3 py-2 rounded-xl text-xs font-bold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition-all text-left">
+                                <div>Abszolút</div>
+                                <div class="font-mono text-[11px] opacity-90">$A$1</div>
+                            </button>
+                            <button onclick="setRefType('mixed-col')" id="btn-ref-mcol" class="px-3 py-2 rounded-xl text-xs font-bold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition-all text-left">
+                                <div>Vegyes (Oszlop fix)</div>
+                                <div class="font-mono text-[11px] opacity-90">$A1</div>
+                            </button>
+                            <button onclick="setRefType('mixed-row')" id="btn-ref-mrow" class="px-3 py-2 rounded-xl text-xs font-bold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition-all text-left">
+                                <div>Vegyes (Sor fix)</div>
+                                <div class="font-mono text-[11px] opacity-90">A$1</div>
+                            </button>
+                        </div>
+
+                        <button onclick="cycleF4()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow transition-all">
+                            <i data-lucide="key" class="w-4 h-4 text-emerald-400"></i> Nyomd meg az F4 Billentyűt!
+                        </button>
+                    </div>
+
+                    <!-- Right: Dynamic Output & Visual Behavior -->
+                    <div class="lg:col-span-7 bg-slate-900 text-white rounded-2xl p-6 shadow-xl space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <span class="text-xs text-slate-400">Kijelölt hivatkozás alakja</span>
+                            <span class="font-mono text-xl font-bold text-emerald-400" id="ref-display-code">A1</span>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Működés elve:</h4>
+                                <p class="text-xs text-slate-300 mt-1" id="ref-description">
+                                    Másoláskor az oszlop és a sor is szabadon elmozdul a másolás irányának megfelelően.
+                                </p>
+                            </div>
+
+                            <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700 text-xs">
+                                <span class="text-emerald-400 font-bold block mb-1">Gyakorlati példa:</span>
+                                <span id="ref-example-text">Ha a C1 cellában lévő <code class="text-yellow-300 font-mono">=A1+B1</code> képletet lemásolod egy sorral lejjebb a C2-be, a képlet automatikusan átvált <code class="text-yellow-300 font-mono">=A2+B2</code> értékre.</span>
+                            </div>
+                        </div>
+
+                        <!-- Visual Grid Indicator -->
+                        <div class="pt-2">
+                            <div class="text-[10px] text-slate-400 mb-2 flex justify-between">
+                                <span>Oszlop rögzítés: <strong id="lock-col-status" class="text-red-400">NINCS ($A)</strong></span>
+                                <span>Sor rögzítés: <strong id="lock-row-status" class="text-red-400">NINCS ($1)</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: ADATBEVITEL ÉS JAVÍTÁS -->
+        <section id="adatbevitel" class="scroll-mt-20">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2.5 bg-emerald-100 text-excel-700 rounded-xl">
+                    <i data-lucide="keyboard" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">5. Adatbevitel és javítási módok</h2>
+                    <p class="text-sm text-slate-500">Hogyan rögzítsük vagy módosítsuk a leírt adatokat hatékonyan.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Adatbevitel Jóváhagyása -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-excel-600"></i>
+                        Adatbevitel jóváhagyása
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <kbd class="px-2.5 py-1 bg-white border border-slate-300 rounded shadow-sm text-xs font-mono font-bold text-slate-700">Enter</kbd>
+                                <span class="text-xs text-slate-700">Adat rögzítése és lépés az <strong>alatta</strong> lévő cellára.</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <kbd class="px-2.5 py-1 bg-white border border-slate-300 rounded shadow-sm text-xs font-mono font-bold text-slate-700">Tab</kbd>
+                                <span class="text-xs text-slate-700">Adat rögzítése és lépés a <strong>jobbra</strong> lévő cellára.</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <kbd class="px-2.5 py-1 bg-white border border-slate-300 rounded shadow-sm text-xs font-mono font-bold text-slate-700">Esc</kbd>
+                                <span class="text-xs text-slate-700">Adatbeviteli folyamat megszakítása (visszavonás).</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Adatjavítás Módjai -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="edit-3" class="w-5 h-5 text-amber-600"></i>
+                        Adatjavítás és módosítás
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                            <strong class="text-slate-800 block mb-0.5">1. Felülírás:</strong>
+                            <span class="text-slate-600">Kattints a cellára és gépeld be az új tartalmat. A régi tartalom azonnal törlődik.</span>
+                        </div>
+                        <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                            <strong class="text-slate-800 block mb-0.5">2. Szerkesztési mód (F2):</strong>
+                            <span class="text-slate-600">Nyomd meg az <kbd class="px-1 py-0.5 bg-white border rounded font-mono">F2</kbd> gombot, kattints duplán a cellára, vagy használd a <strong>Szerkesztőlécet</strong> a részleges módosításhoz!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: NAVIGÁCIÓ ÉS KIJELÖLÉSEK (SEARCHABLE CHEATSHEET) -->
+        <section id="navigacio" class="scroll-mt-20">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 bg-purple-100 text-purple-700 rounded-xl">
+                        <i data-lucide="compass" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900">6. Navigáció és kijelölések gyorsmátrixa</h2>
+                        <p class="text-sm text-slate-500">Kereshető billentyűkombinációk a villámgyors munkához.</p>
+                    </div>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative w-full md:w-64">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                    <input type="text" id="shortcut-search" placeholder="Keresés billentyűre..." onkeyup="filterShortcuts()" class="w-full pl-9 pr-4 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-excel-600">
+                </div>
+            </div>
+
+            <!-- Table of Shortcuts -->
+            <div class="glass-card rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                                <th class="p-3.5">Billentyű / kombináció</th>
+                                <th class="p-3.5">Kategória</th>
+                                <th class="p-3.5">Funkció és magyarázat</th>
+                                <th class="p-3.5">Példa / használat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shortcut-table-body" class="divide-y divide-slate-200">
+                            <!-- Rows inserted via template / static -->
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-3 font-mono font-bold text-excel-700"><kbd class="px-2 py-0.5 bg-slate-100 border rounded">Nyilak</kbd></td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[10px] font-semibold">Navigáció</span></td>
+                                <td class="p-3 text-slate-700">Lépés egy cellával a megadott irányba.</td>
+                                <td class="p-3 text-slate-500">Jobbra, balra, fel, le lépkedés.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-3 font-mono font-bold text-excel-700"><kbd class="px-2 py-0.5 bg-slate-100 border rounded">Ctrl</kbd> + <kbd class="px-2 py-0.5 bg-slate-100 border rounded">Nyíl</kbd></td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[10px] font-semibold">Navigáció</span></td>
+                                <td class="p-3 text-slate-700">Ugrás az adatrégió szélére (az utolsó kitöltött celláig).</td>
+                                <td class="p-3 text-slate-500"><code class="text-slate-800">Ctrl + Le nyíl</code>: Oszlop utolsó adatára ugrás.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-3 font-mono font-bold text-excel-700"><kbd class="px-2 py-0.5 bg-slate-100 border rounded">Home</kbd></td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[10px] font-semibold">Navigáció</span></td>
+                                <td class="p-3 text-slate-700">Ugrás az aktuális sor első cellájába (A oszlop).</td>
+                                <td class="p-3 text-slate-500"><code class="text-slate-800">G15</code> cellából ugrás az <code class="text-slate-800">A15</code>-re.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-3 font-mono font-bold text-excel-700"><kbd class="px-2 py-0.5 bg-slate-100 border rounded">Ctrl</kbd> + <kbd class="px-2 py-0.5 bg-slate-100 border rounded">Home</kbd></td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[10px] font-semibold">Navigáció</span></td>
+                                <td class="p-3 text-slate-700">Ugrás a munkalap legelső cellájába.</td>
+                                <td class="p-3 text-slate-500">Azonnali visszatérés az <code class="text-slate-800">A1</code> cellába.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-3 font-mono font-bold text-excel-700"><kbd class="px-2 py-0.5 bg-slate-100 border rounded">Egér bal gombja</kbd> + <kbd class="px-2 py-0.5 bg-slate-100 border rounded">húzás</kbd></td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-[10px] font-semibold">Kijelölés</span></td>
+                                <td class="p-3 text-slate-700">Egybefüggő tartomány kijelölése `meszeléssel`.</td>
+                                <td class="p-3 text-slate-500">Cellatartomány kiválasztása egérrel.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-3 font-mono font-bold text-excel-700"><kbd class="px-2 py-0.5 bg-slate-100 border rounded">Shift</kbd> + <kbd class="px-2 py-0.5 bg-slate-100 border rounded">Nyilak</kbd></td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-[10px] font-semibold">Kijelölés</span></td>
+                                <td class="p-3 text-slate-700">Egybefüggő tartomány kijelölése lépésről lépésre.</td>
+                                <td class="p-3 text-slate-500">Cellatartomány kiválasztása billentyűzettel.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-3 font-mono font-bold text-excel-700"><kbd class="px-2 py-0.5 bg-slate-100 border rounded">Ctrl</kbd> + <kbd class="px-2 py-0.5 bg-slate-100 border rounded">Shift</kbd> + <kbd class="px-2 py-0.5 bg-slate-100 border rounded">Nyíl</kbd></td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-[10px] font-semibold">Kijelölés</span></td>
+                                <td class="p-3 text-slate-700">Gyors kijelölés a kitöltött adatrégió széléig.</td>
+                                <td class="p-3 text-slate-500">Több ezer soros táblázat egy másodperces kijelölése.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-3 font-mono font-bold text-excel-700"><kbd class="px-2 py-0.5 bg-slate-100 border rounded">Ctrl</kbd> + Egérkattintás</td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-[10px] font-semibold">Kijelölés</span></td>
+                                <td class="p-3 text-slate-700">Nem egybefüggő cellák vagy tartományok kijelölése.</td>
+                                <td class="p-3 text-slate-500">Tetszőleges cellák kiválasztása egymástól távol.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-3 font-mono font-bold text-excel-700"><kbd class="px-2 py-0.5 bg-slate-100 border rounded">Ctrl</kbd> + <kbd class="px-2 py-0.5 bg-slate-100 border rounded">A</kbd> vagy <kbd class="px-2 py-0.5 bg-slate-100 border rounded">Ctrl</kbd> + <kbd class="px-2 py-0.5 bg-slate-100 border rounded">*</kbd></td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-[10px] font-semibold">Kijelölés</span></td>
+                                <td class="p-3 text-slate-700">A teljes munkalap vagy az aktuális adattáblázat kijelölése.</td>
+                                <td class="p-3 text-slate-500">Minden cella kiválasztása egyszerre.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-3 font-mono font-bold text-excel-700"> Egérkattintás + <kbd class="px-2 py-0.5 bg-slate-100 border rounded">oszlopazonosítón</kbd> / <kbd class="px-2 py-0.5 bg-slate-100 border rounded">sorazonosítón</kbd></td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-[10px] font-semibold">Kijelölés</span></td>
+                                <td class="p-3 text-slate-700">Oszlop vagy sor kijelölése</td>
+                                <td class="p-3 text-slate-500">Teljes oszlop vagy sor kijelölése.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: TUDÁSPRÓBA KVÍZ -->
+        <section id="kviz" class="scroll-mt-20">
+            <div class="bg-gradient-to-br from-slate-900 to-excel-950 text-white rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
+                    <div class="p-2.5 bg-excel-600 rounded-xl text-white">
+                        <i data-lucide="award" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold">Interaktív Excel tudáspróba</h2>
+                        <p class="text-xs text-slate-400">Teszteld a megszerzett tudásodat véletlenszerűen kiválasztott 5 villámkérdéssel!</p>
+                    </div>
+                </div>
+
+                <!-- Quiz Container -->
+                <div id="quiz-container" class="space-y-6">
+                    <!-- Dynamic Question Area -->
+                    <div id="quiz-card" class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
+                        <div class="flex justify-between items-center text-xs text-emerald-400 mb-2">
+                            <span id="quiz-progress-text">1 / 5 Kérdés</span>
+                            <span id="quiz-score-text">Pontszám: 0</span>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-bold text-white mb-4" id="quiz-question">
+                            Kérdés betöltése...
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="quiz-options">
+                            <!-- Options rendered dynamically -->
+                        </div>
+                        <div id="quiz-feedback" class="mt-4 p-3 rounded-xl text-xs font-semibold hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Quiz Reset / Summary (Hidden initially) -->
+                <div id="quiz-summary" class="hidden text-center py-8 space-y-4">
+                    <div class="w-16 h-16 bg-excel-600 rounded-full flex items-center justify-center mx-auto text-2xl font-extrabold text-white">
+                        🎉
+                    </div>
+                    <h3 class="text-2xl font-bold text-white">Szép munka! Gratulálunk!</h3>
+                    <p class="text-sm text-slate-300" id="quiz-final-score"></p>
+                    <button onclick="restartQuiz()" class="px-6 py-2.5 bg-excel-600 hover:bg-excel-700 text-white rounded-xl text-xs font-bold shadow-lg transition-all">
+                        Kvíz újrakezdése
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 text-center text-xs text-slate-500 border-t border-slate-200 pt-8">
+        <p>Excel alapok • Készült a jobb megértés céljából</p>
+    </footer>
+
+    <!-- JavaScript Functionality -->
+    <script>
+        // Initialize Lucide Icons
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initQuiz();
+        });
+
+        /* -------------------------------------------------------------
+           1. Interactive Grid Visualizer
+        ------------------------------------------------------------- */
+        const cellItems = document.querySelectorAll('.cell-item');
+        const fxName = document.getElementById('fx-cell-name');
+        const fxVal = document.getElementById('fx-cell-value');
+        const cellBadge = document.getElementById('selected-cell-badge');
+        const explanation = document.getElementById('interactive-explanation');
+
+        cellItems.forEach(cell => {
+            cell.addEventListener('click', () => {
+                // Remove highlight from others
+                cellItems.forEach(c => c.classList.remove('bg-excel-100', 'ring-2', 'ring-excel-600', 'z-10'));
+                
+                // Add highlight to clicked cell
+                cell.classList.add('bg-excel-100', 'ring-2', 'ring-excel-600', 'z-10');
+                
+                const cellAddr = cell.getAttribute('data-cell');
+                const cellValue = cell.getAttribute('data-val');
+                
+                fxName.innerText = cellAddr;
+                fxVal.value = cellValue;
+                cellBadge.innerText = `Kijelölve: ${cellAddr}`;
+
+                explanation.innerHTML = `A kijelölt cella koordinátája <strong>${cellAddr}</strong>. Tartalma: <code class="bg-white px-1.5 py-0.5 rounded border text-excel-700 font-mono font-bold">${cellValue}</code>.`;
+            });
+        });
+
+        function highlightCol(colLetter) {
+            cellBadge.innerText = `Kijelölve: ${colLetter} oszlop`;
+            explanation.innerHTML = `A(z) <strong>${colLetter} oszlop</strong> kijelölve. Az oszlopok függőleges adatsorok, melyek betűkkel vannak jelölve (A-tól XFD-ig).`;
+        }
+
+        function highlightRow(rowNum) {
+            cellBadge.innerText = `Kijelölve: ${rowNum}. sor`;
+            explanation.innerHTML = `A(z) <strong>${rowNum}. sor</strong> kijelölve. A sorok vízszintes adatsorok, melyek számokkal vannak jelölve (1-től 1 048 576-ig).`;
+        }
+
+        /* -------------------------------------------------------------
+           2. Cell Reference Simulator
+        ------------------------------------------------------------- */
+        let currentRefIndex = 0;
+        const refTypes = [
+            {
+                type: 'relative',
+                code: 'A1',
+                desc: 'Másoláskor mind az oszlop (A), mind a sor (1) szabadon elmozdul a másolás irányának megfelelően.',
+                example: 'Ha a C1-ben lévő =A1+B1 képletet lemásolod egy sorral lejjebb (C2-be), ott automatikusan =A2+B2 lesz.',
+                lockCol: false,
+                lockRow: false,
+                btnId: 'btn-ref-rel'
+            },
+            {
+                type: 'absolute',
+                code: '$A$1',
+                desc: 'Mind az oszlop, mind a sor rögzítve van dollárjellel ($). A képlet bárhová másolható, a hivatkozás nem változik.',
+                example: 'Fix ÁFA kulcs rögzítésénél: =B2*$E$1. A képletet lefelé másolva az $E$1 cella mindig rögzített marad.',
+                lockCol: true,
+                lockRow: true,
+                btnId: 'btn-ref-abs'
+            },
+            {
+                type: 'mixed-col',
+                code: '$A1',
+                desc: 'Vegyes hivatkozás: Csak az oszlop (A) van rögzítve dollárjellel. Vízszintes másoláskor az oszlop változatlan marad.',
+                example: 'Ha a képletet jobbra másolod, az $A oszlop jelölése rögzítve marad, de lefelé másolva a sor száma növekszik.',
+                lockCol: true,
+                lockRow: false,
+                btnId: 'btn-ref-mcol'
+            },
+            {
+                type: 'mixed-row',
+                code: 'A$1',
+                desc: 'Vegyes hivatkozás: Csak a sor (1) van rögzítve dollárjellel. Függőleges másoláskor a sor száma nem változik.',
+                example: 'Szorzótábla készítésénél kitűnő: =A$1*B2. Függőlegesen lehúzva az 1-es sor mindig rögzített marad.',
+                lockCol: false,
+                lockRow: true,
+                btnId: 'btn-ref-mrow'
+            }
+        ];
+
+        function updateRefUI(data) {
+            document.getElementById('ref-display-code').innerText = data.code;
+            document.getElementById('ref-description').innerText = data.desc;
+            document.getElementById('ref-example-text').innerText = data.example;
+
+            const colStatus = document.getElementById('lock-col-status');
+            const rowStatus = document.getElementById('lock-row-status');
+
+            if(data.lockCol) {
+                colStatus.innerText = 'RÖGZÍTVE ($A)';
+                colStatus.className = 'text-emerald-400 font-bold';
+            } else {
+                colStatus.innerText = 'NINCS ($A)';
+                colStatus.className = 'text-red-400 font-bold';
+            }
+
+            if(data.lockRow) {
+                rowStatus.innerText = 'RÖGZÍTVE ($1)';
+                rowStatus.className = 'text-emerald-400 font-bold';
+            } else {
+                rowStatus.innerText = 'NINCS ($1)';
+                rowStatus.className = 'text-red-400 font-bold';
+            }
+
+            // Reset buttons styling
+            ['btn-ref-rel', 'btn-ref-abs', 'btn-ref-mcol', 'btn-ref-mrow'].forEach(id => {
+                const btn = document.getElementById(id);
+                btn.className = 'px-3 py-2 rounded-xl text-xs font-bold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition-all text-left';
+            });
+
+            // Highlight selected button
+            const activeBtn = document.getElementById(data.btnId);
+            activeBtn.className = 'px-3 py-2 rounded-xl text-xs font-bold border border-excel-600 bg-excel-600 text-white shadow-sm transition-all text-left';
+        }
+
+        function setRefType(typeKey) {
+            const index = refTypes.findIndex(r => r.type === typeKey);
+            if(index !== -1) {
+                currentRefIndex = index;
+                updateRefUI(refTypes[currentRefIndex]);
+            }
+        }
+
+        function cycleF4() {
+            currentRefIndex = (currentRefIndex + 1) % refTypes.length;
+            updateRefUI(refTypes[currentRefIndex]);
+        }
+
+        /* -------------------------------------------------------------
+           3. Search / Filter Shortcuts
+        ------------------------------------------------------------- */
+        function filterShortcuts() {
+            const input = document.getElementById('shortcut-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#shortcut-table-body tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if(text.includes(input)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        /* -------------------------------------------------------------
+           4. Interactive Knowledge Quiz
+        ------------------------------------------------------------- */
+        const quizData = [
+            {
+                q: "Melyik állítás írja le pontosan a munkafüzet és a munkalap közötti viszonyt az Excelben?",
+                options: [
+                    "A munkalap és a munkafüzet szinonimák, semmilyen különbség nincs köztük.",
+                    "A munkafüzet egyetlen fájl, amely egy vagy több munkalapot tartalmazhat.",
+                    "A munkalap több különálló munkafüzetből áll.",
+                    "A munkafüzet mindig csak egyetlen munkalapból állhat."
+                ],
+                correct: 1,
+                exp: "A munkafüzet az Excel elsődleges fájlja (.xlsx), amely különálló lapokból (munkalapokból) áll."
+            },
+            {
+                q: "Hány sor található maximum egyetlen Excel munkalapon?",
+                options: ["65 536", "500 000", "1 048 576", "Korlátlan számú"],
+                correct: 2,
+                exp: "Egy Excel munkalapon pontosan 1 048 576 sor található."
+            },
+            {
+                q: "Hogyan jelöli az Excel a munkalap függőleges adatsorait (az oszlopokat)?",
+                options: ["Számokkal (1-től kezdődően)", "Betűkkel, A-tól XFD-ig", "Római számokkal", "Különleges szimbólumokkal"],
+                correct: 1,
+                exp: "Az oszlopokat betűkkel jelöljük A-tól XFD-ig (összesen 16 384 oszlop található)."
+            },
+            {
+                q: "Alapértelmezett beállítások mellett hová igazítja az Excel a tisztán szám típusú adatokat a cellán belül?",
+                options: ["A cella bal oldalára", "A cella közepére", "A cella jobb oldalára", "Sorkizárva"],
+                correct: 2,
+                exp: "A számok automatikusan a cella jobb oldalára igazodnak, míg a szövegek a bal oldalára."
+            },
+            {
+                q: "Hogyan tárolja az Excel a dátumokat a háttérben?",
+                options: [
+                    "Sima nem módosítható szövegként",
+                    "Sorszámként, az 1900. január 1-jétől eltelt napok száraként",
+                    "Bináris kódként",
+                    "Különleges grafikus objektumként"
+                ],
+                correct: 1,
+                exp: "A dátumok valójában sorszámok, így matematikai műveletek (például napok kivonása egymásból) is végezhetők velük."
+            },
+            {
+                q: "Milyen karakterrel kell kötelezően kezdődnie minden képletnek és függvénynek az Excelben?",
+                options: ["Kettőspont (:)", "Dollárjel ($)", "Egyenlőségjel (=)", "Kérdőjel (?)"],
+                correct: 2,
+                exp: "Minden képlet és függvény kötelezően egyenlőségjellel (=) kezdődik."
+            },
+            {
+                q: "Ha a C1 cellában lévő =A1+B1 képletet lemásoljuk a C2 cellába, mi lesz a C2-ben lévő képlet?",
+                options: ["=A1+B1", "=A2+B2", "=$A$1+$B$1", "=C1+1"],
+                correct: 1,
+                exp: "Relatív hivatkozásnál a képlet eltolódik a másolás irányának megfelelően (1 sorral lejjebb)."
+            },
+            {
+                q: "Melyik hivatkozási forma biztosítja, hogy a képlet másolásakor sem az oszlop, sem a sor jelölése ne változzon meg?",
+                options: ["A1 (Relatív)", "$A$1 (Abszolút)", "$A1 (Vegyes)", "A$1 (Vegyes)"],
+                correct: 1,
+                exp: "Az abszolút hivatkozás ($A$1) mind az oszlopot, mind a sort rögzíti a dollárjelekkel."
+            },
+            {
+                q: "Melyik billentyűvel lehet gyorsan váltani a relatív, abszolút és vegyes cellahivatkozások között a képletszerkesztés során?",
+                options: ["F2", "F4", "F8", "F12"],
+                correct: 1,
+                exp: "Az F4 gomb ciklikusan lépteti a hivatkozástípusokat (A1 -> $A$1 -> A$1 -> $A1)."
+            },
+            {
+                q: "Mit jelent a $A1 vegyes hivatkozás a képlet másolásakor?",
+                options: [
+                    "Az oszlop rögzítve van, de a sor elmozdulhat.",
+                    "A sor rögzítve van, de az oszlop elmozdulhat.",
+                    "Mind az oszlop, mind a sor rögzítve van.",
+                    "Egyik sincs rögzítve."
+                ],
+                correct: 0,
+                exp: "A dollárjel a közvetlenül utána álló karaktert rögzíti (itt az 'A' oszlopot)."
+            },
+            {
+                q: "Melyik billentyűvel hagyhatjuk jóvá az adatbevitelt úgy, hogy a kijelölés a jobbra lévő szomszédos cellára lépjen?",
+                options: ["Enter", "Tab", "Esc", "Space"],
+                correct: 1,
+                exp: "A Tab billentyűvel jobbra léptethetünk a jóváhagyás után, míg az Enterrel lefelé."
+            },
+            {
+                q: "Melyik billentyű megnyomásával léphetünk közvetlenül a kijelölt cella szerkesztési módjába?",
+                options: ["F2", "F5", "Ctrl + E", "Alt + Enter"],
+                correct: 0,
+                exp: "Az F2 billentyű azonnal megnyitja a kijelölt cellát szerkesztésre."
+            },
+            {
+                q: "Hová ugrik a kurzor a Ctrl + Home billentyűkombináció megnyomásakor?",
+                options: [
+                    "Az aktuális sor első cellájába",
+                    "A munkalap legelső (A1) cellájába",
+                    "Az utolsó kitöltött cellába",
+                    "A legutolsó munkalapra"
+                ],
+                correct: 1,
+                exp: "A Ctrl + Home billentyűkombináció azonnal visszaviszi a kurzort az A1 jelű kezdőcellába."
+            },
+            {
+                q: "Mire szolgál a Ctrl + Le nyíl billentyűkombináció használata egy táblázatban?",
+                options: [
+                    "Egy cellát lép lefelé",
+                    "Ugrás a kitöltött adatrégió alsó szélére",
+                    "Kijelöli az egész oszlopot",
+                    "Új sort szúr be"
+                ],
+                correct: 1,
+                exp: "A Ctrl + Nyíl gombok a legutolsó kitöltött celláig ugranak az adott irányban."
+            },
+            {
+                q: "Milyen műveletet hajt végre a Ctrl + Shift + Jobbra nyíl billentyűkombináció?",
+                options: [
+                    "Jobbra mozgatja a teljes táblázatot",
+                    "Kijelöli a cellákat a kitöltött adatrégió jobb széléig",
+                    "Új oszlopot hoz létre jobbra",
+                    "Jobbra igazítja a kijelölt cellák tartalmát"
+                ],
+                correct: 1,
+                exp: "A Ctrl + Shift + Nyíl kombinációval villámgyorsan kijelölhető a teljes adatrégió a megadott irányban."
+            },
+            {
+                q: "Melyik billentyű nyomvatartásával jelölhetünk ki egymástól távol eső, nem egybefüggő cellákat az egérrel?",
+                options: ["Shift", "Alt", "Ctrl", "Tab"],
+                correct: 2,
+                exp: "A Ctrl billentyű nyomvatartásával tetszőleges, nem szomszédos cellák vagy tartományok jelölhetők ki."
+            },
+            {
+                q: "Melyik az alábbiak közül egy érvényes Excel függvény, amely egy cellatartomány elemeinek összeadását végzi?",
+                options: [
+                    "SUMMA(A1;A10)",
+                    "=SZUM(A1:A10)",
+                    "ÖSSZEAD(A1..A10)",
+                    "=ADD(A1-A10)"
+                ],
+                correct: 1,
+                exp: "Az Excelben a beépített összegző függvény a SZUM, az összeadandó tartományt pedig kettősponttal (:) adjuk meg."
+            },
+            {
+                q: "Mit jelent az A1:A10 jelölés egy képletben vagy függvényben?",
+                options: [
+                    "Csak az A1 és az A10 cellát jelöli ki.",
+                    "Az A1 és A10 közötti összes egybefüggő cellát (tartományt) jelöli.",
+                    "Az A1 cella értékét osztja el az A10 értékével.",
+                    "Az A1 cellától az A10 oszlopig terjedő teljes sávot."
+                ],
+                correct: 1,
+                exp: "A kettőspont (:) a folyamatos cellatartomány jelölésére szolgál az Excelben (A1-től A10-ig az összes cella)."
+            },
+            {
+                q: "Mi történik, ha adatbevitel vagy szerkesztés közben megnyomod az Esc billentyűt?",
+                options: [
+                    "Az adat rögzítésre kerül és kilép az Excelből.",
+                    "A cella tartalma véglegesen törlődik.",
+                    "Megszakad az adatbeviteli folyamat, és a cella visszatér a szerkesztés előtti állapotára.",
+                    "Lemásolja a cellát a vágólapra."
+                ],
+                correct: 2,
+                exp: "Az Esc (Escape) billentyű megszakítja a folyamatban lévő adatbevitelt vagy szerkesztést módosítás nélkül."
+            },
+            {
+                q: "Melyik billentyűkombinációval tudsz egybefüggő cellatartományt kijelölni lépésről lépésre a billentyűzettel?",
+                options: ["Alt + Nyilak", "Shift + Nyilak", "Tab + Nyilak", "Space + Nyilak"],
+                correct: 1,
+                exp: "A Shift billentyű nyomvatartásával a nyílbillentyűkkel celláról cellára bővíthetjük a kijelölést."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let quizScore = 0;
+        let activeQuizQuestions = [];
+
+        function initQuiz() {
+            // Sorsoljunk ki 5 véletlenszerű kérdést a 20 elemű kérdésbankból
+            activeQuizQuestions = [...quizData].sort(() => 0.5 - Math.random()).slice(0, 5);
+            currentQIndex = 0;
+            quizScore = 0;
+            document.getElementById('quiz-summary').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = activeQuizQuestions[currentQIndex];
+            document.getElementById('quiz-progress-text').innerText = `${currentQIndex + 1} / ${activeQuizQuestions.length} Kérdés`;
+            document.getElementById('quiz-score-text').innerText = `Pontszám: ${quizScore}`;
+            document.getElementById('quiz-question').innerText = q.q;
+
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.add('hidden');
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'p-3 bg-slate-700/60 hover:bg-slate-700 border border-slate-600 rounded-xl text-xs font-semibold text-white text-left transition-all flex items-center justify-between';
+                btn.innerHTML = `<span>${opt}</span> <i data-lucide="circle" class="w-4 h-4 text-slate-400"></i>`;
+                btn.onclick = () => checkAnswer(idx);
+                optionsContainer.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function checkAnswer(selectedIdx) {
+            const q = activeQuizQuestions[currentQIndex];
+            const feedback = document.getElementById('quiz-feedback');
+            const options = document.querySelectorAll('#quiz-options button');
+
+            // Disable all buttons
+            options.forEach(b => b.disabled = true);
+
+            if(selectedIdx === q.correct) {
+                quizScore++;
+                options[selectedIdx].className = 'p-3 bg-emerald-600 text-white rounded-xl text-xs font-semibold text-left border border-emerald-400 flex items-center justify-between';
+                feedback.className = 'mt-4 p-3 rounded-xl text-xs font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-700';
+                feedback.innerHTML = `✅ <strong>Helyes válasz!</strong> ${q.exp}`;
+            } else {
+                options[selectedIdx].className = 'p-3 bg-red-600 text-white rounded-xl text-xs font-semibold text-left border border-red-400 flex items-center justify-between';
+                options[q.correct].className = 'p-3 bg-emerald-600 text-white rounded-xl text-xs font-semibold text-left border border-emerald-400 flex items-center justify-between';
+                feedback.className = 'mt-4 p-3 rounded-xl text-xs font-semibold bg-red-950/80 text-red-300 border border-red-700';
+                feedback.innerHTML = `❌ <strong>Helytelen!</strong> ${q.exp}`;
+            }
+
+            feedback.classList.remove('hidden');
+
+            setTimeout(() => {
+                currentQIndex++;
+                if(currentQIndex < activeQuizQuestions.length) {
+                    renderQuestion();
+                } else {
+                    showQuizSummary();
+                }
+            }, 5000);
+        }
+
+        function showQuizSummary() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            const summary = document.getElementById('quiz-summary');
+            summary.classList.remove('hidden');
+            document.getElementById('quiz-final-score').innerText = `Összesen ${activeQuizQuestions.length} kérdésből ${quizScore} helyes választ értél el (${Math.round((quizScore/activeQuizQuestions.length)*100)}%).`;
+        }
+
+        function restartQuiz() {
+            initQuiz();
+        }
+    </script>
+</body>
+</html>
