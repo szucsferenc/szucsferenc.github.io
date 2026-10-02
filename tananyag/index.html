@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="hu" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanulási segédletek</title>
+    
+    <!-- Tailwind CSS (Gyors és letisztult stílusokhoz) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Ikonok (Ikonok megjelenítéséhez) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Office / Fluent UI Színtéma beállítások -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        office: {
+                            blue: '#0078d4',
+                            darkBlue: '#106ebe',
+                            lightBg: '#f3f2f1',
+                            cardBg: '#ffffff',
+                            border: '#e1dfdd',
+                            textPrimary: '#323130',
+                            textSecondary: '#605e5c',
+                            // Kategória egyedi színek
+                            excel: '#107c41',
+                            word: '#185abd',
+                            ppt: '#c43e1c',
+                            code: '#5c2d91',
+                            mobile: '#008272',
+                            graphics: '#b4009e',
+                            network: '#0078d4'
+                        }
+                    },
+                    fontFamily: {
+                        segoe: ['"Segoe UI"', '-apple-system', 'BlinkMacSystemFont', 'Roboto', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: #f3f2f1;
+            color: #323130;
+        }
+
+        /* Testreszabott gördítősáv (Office stílus) */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c8c6c4;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a19f9d;
+        }
+
+        /* Fluent Kártya Árnyékok és Átmenetek */
+        .fluent-card {
+            background: #ffffff;
+            border: 1px solid #e1dfdd;
+            border-radius: 8px;
+            box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.1), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.07);
+            transition: all 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+
+        .fluent-card:hover {
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.12), 0 1px 3px 0 rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .fluent-btn {
+            background-color: #0078d4;
+            color: white;
+            border-radius: 4px;
+            transition: background-color 0.15s ease;
+        }
+
+        .fluent-btn:hover {
+            background-color: #106ebe;
+        }
+
+        /* Rejtett elemek keresésnél */
+        .card-hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- ================================================================= -->
+    <!-- FEJLÉC (HEADER)                                                   -->
+    <!-- ================================================================= -->
+    <header class="bg-[#0078d4] text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Cím és Ikon -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-xl font-bold border border-white/20 shadow-inner">
+                        <i class="fa-solid fa-book-open text-white"></i>
+                    </div>
+                    <div>
+                        <!-- ITT MÓDOSÍTHATOD AZ OLDAL FŐCÍMÉT -->
+                        <h1 class="text-xl font-bold tracking-tight text-white leading-tight">Tanulási segédletek</h1>
+                        <p class="text-xs text-blue-100 hidden sm:block">Digitális oktatási tananyagtár és felkészítő gyűjtemény</p>
+                    </div>
+                </div>
+                
+                <!-- GitHub jelzés -->
+                <!--
+                <div class="flex items-center space-x-2">
+                    <span class="bg-white/10 text-white text-xs px-3 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5">
+                        <i class="fa-brands fa-github text-sm"></i>
+                        <span class="hidden sm:inline">GitHub Pages Weboldal</span>
+                    </span>
+                </div>
+                -->
+
+            </div>
+        </div>
+        
+        <!-- Quick Navigation Bar / Gyorsnavigáció -->
+        <div class="bg-[#106ebe] text-white/90 text-xs py-2 px-4 border-t border-blue-400/30 overflow-x-auto whitespace-nowrap">
+            <div class="max-w-7xl mx-auto flex items-center space-x-2 sm:space-x-4">
+                <span class="text-blue-200 font-semibold uppercase tracking-wider text-[10px] hidden md:inline">Ugrás:</span>
+                <a href="#tablazatkezeles" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 transition text-white">Táblázatkezelés</a>
+                <a href="#szovegszerkesztes" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 transition text-white">Szövegszerkesztés</a>
+                <a href="#prezentacio" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 transition text-white">Prezentáció</a>
+                <a href="#programozas" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 transition text-white">Programozás</a>
+                <a href="#mobiltechnologia" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 transition text-white">Mobiltechnológia</a>
+                <a href="#grafika" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 transition text-white">Grafika és multimédia</a>
+                <a href="#kommunikacio" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 transition text-white">Online kommunikáció</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================================================================= -->
+    <!-- FŐ TARTALOM TERÜLET                                               -->
+    <!-- ================================================================= -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+        
+        <!-- Keresősáv (Élő szűréshez) -->
+        <!--
+        <div class="fluent-card p-4 mb-8">
+            <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                <div class="relative w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <input type="text" id="searchInput" onkeyup="filterCards()" placeholder="Keresés a segédletek, címeik vagy formátumaik között..." 
+                        class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0078d4] text-sm bg-gray-50 focus:bg-white transition">
+                </div>
+                <button onclick="clearSearch()" class="w-full sm:w-auto px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-md transition whitespace-nowrap">
+                    Keresés törlése
+                </button>
+            </div>
+        </div>
+        -->
+        
+        <!-- Üzenet üres keresési találat esetén -->
+        <!--
+        <div id="noResults" class="hidden text-center py-12 bg-white rounded-lg border border-dashed border-gray-300 mb-8">
+            <i class="fa-solid fa-folder-open text-4xl text-gray-300 mb-2"></i>
+            <h3 class="text-base font-semibold text-gray-700">Nincs találat a megadott keresési kifejezésre</h3>
+            <p class="text-xs text-gray-500 mt-1">Próbálj meg más kulcsszót beírni!</p>
+        </div>
+        -->
+
+        <!-- ================================================================= -->
+        <!-- 1. SZEKCIÓ: TÁBLÁZATKEZELÉS                                       -->
+        <!-- ================================================================= -->
+        <section id="tablazatkezeles" class="section-block mb-10">
+            <!-- Szekció Fejléc -->
+            <div class="flex items-center space-x-3 mb-4 pb-2 border-b-2 border-[#107c41]">
+                <div class="w-9 h-9 rounded-lg bg-green-100 text-[#107c41] flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-file-excel"></i>
+                </div>
+                <div>
+                    <!-- ITT MÓDOSÍTHATOD A FŐCÍMET -->
+                    <h2 class="text-xl font-bold text-gray-800 tracking-tight">Táblázatkezelés</h2>
+                    <p class="text-xs text-gray-500">Excel képletek, függvények, kimutatások és adattáblák használata</p>
+                </div>
+            </div>
+
+            <!-- Kártyák Rácsa (3 Minta Kártya) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- ÚJ KÁRTYA MÁSOLÁSA INNEN (1. Kártya) -->
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#107c41]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <!-- Formátum Címke (pl. XLSX, PDF, Video, Link) -->
+
+                            <!--
+                            <span class="px-2 py-0.5 bg-green-50 text-[#107c41] border border-green-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-excel mr-1"></i> XLSX
+                            </span>
+                            -->
+
+                            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-globe mr-1"></i> Weboldal
+                            </span>
+
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #1</span>
+                        </div>
+                        <!-- Cím -->
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Táblázatkezelési alapfogalmak</h3>
+                        <!-- Leírás -->
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Összefoglaló jegyzet az adattípusok és hivatkozások jobb megértéséhez.
+                        </p>
+                    </div>
+                    <!-- Gomb & Link -->
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <!-- ITT MÓDOSÍTSD A LINKET (href="...") -->
+                        <a href="../excel/alapok.html" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- KÁRTYA VÉGE -->
+
+                <!-- 2. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#107c41]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-pdf mr-1"></i> PDF
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #2</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">FKERES és XKERES Útmutató</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Részletes, lépésről lépésre követhető segédlet az adatok összekapcsolásához és kereséséhez táblázatok között.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="https://support.microsoft.com/hu-hu/office/xkeres-f%C3%BCggv%C3%A9ny-b30221b4-a082-4b3b-84ec-f72630018425" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 3. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#107c41]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-globe mr-1"></i> Weboldal
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #3</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Kimutatások (Pivot Táblák) Alapjai</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Interaktív útmutató nagy méretű adathalmazok másodpercek alatti elemzéséhez és csoportosításához.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="https://support.microsoft.com/hu-hu/office/kimutat%C3%A1s-l%C3%A9trehoz%C3%A1sa-a-munkalapadatok-elemz%C3%A9s%C3%A9hez-a9a3630d-01d0-4927-9bf6-b0b1480b55a0" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+               -->
+
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- 2. SZEKCIÓ: SZÖVEGSZERKESZTÉS                                     -->
+        <!-- ================================================================= -->
+        <section id="szovegszerkesztes" class="section-block mb-10">
+            <div class="flex items-center space-x-3 mb-4 pb-2 border-b-2 border-[#185abd]">
+                <div class="w-9 h-9 rounded-lg bg-blue-100 text-[#185abd] flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-file-word"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 tracking-tight">Szövegszerkesztés</h2>
+                    <p class="text-xs text-gray-500">Dokumentumok formázása, stílusok, hivatkozások és hivatalos iratok</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- 1. Kártya -->
+                
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#185abd]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-blue-50 text-[#185abd] border border-blue-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-word mr-1"></i> DOCX
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #1</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Hivatalos Levél Sablon és Szabályok</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Letölthető Word dokumentum minta margóbeállításokkal, megszólításokkal és elrendezéssel.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 2. Kártya -->
+                
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#185abd]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-pdf mr-1"></i> PDF
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #2</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Automatikus Tartalomjegyzék & Stílusok</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Útmutató a Címsor1, Címsor2 stílusok használatához és a számozott tartalomjegyzék generálásához.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 3. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#185abd]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-circle-play mr-1"></i> Videó
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #3</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Körlevél Készítése Lépésről Lépésre</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Videós bemutató adatforrás (Excel) összefűzéséről Word dokumentum sablonnal.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- 3. SZEKCIÓ: PREZENTÁCIÓ                                           -->
+        <!-- ================================================================= -->
+        <section id="prezentacio" class="section-block mb-10">
+            <div class="flex items-center space-x-3 mb-4 pb-2 border-b-2 border-[#c43e1c]">
+                <div class="w-9 h-9 rounded-lg bg-orange-100 text-[#c43e1c] flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-file-powerpoint"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 tracking-tight">Prezentáció</h2>
+                    <p class="text-xs text-gray-500">Hatásos előadások, diasorok tervezése, vizuális elvek és animációk</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- 1. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#c43e1c]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-orange-50 text-[#c43e1c] border border-orange-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-powerpoint mr-1"></i> PPTX
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #1</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Prezentáció Tervezési Alapszabályok</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Minta diasor a 10/20/30-as szabályról, a kontrasztról és a minimál design elvekről.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 2. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#c43e1c]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-pdf mr-1"></i> PDF
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #2</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Tipográfia és Színhasználat a Diákon</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Segédlet az olvasható betűtípusok kiválasztásához és a jó színkombinációk összeállításához.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 3. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#c43e1c]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-globe mr-1"></i> Weboldal
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #3</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Előadói Technikák és Lámpaláz Kezelése</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Gyakorlati tanácsok a sikeres szóbeli prezentációhoz, testbeszédhez és időbeosztáshoz.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- 4. SZEKCIÓ: ALGORITMIZÁLÁS ÉS PROGRAMOZÁS                         -->
+        <!-- ================================================================= -->
+        <section id="programozas" class="section-block mb-10">
+            <div class="flex items-center space-x-3 mb-4 pb-2 border-b-2 border-[#5c2d91]">
+                <div class="w-9 h-9 rounded-lg bg-purple-100 text-[#5c2d91] flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 tracking-tight">Algoritmizálás és programozás</h2>
+                    <p class="text-xs text-gray-500">Logikai gondolkodás, Python alapok, ciklusok és feltételek</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- 1. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#5c2d91]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-pdf mr-1"></i> PDF
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #1</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Python Nyelv Alapjai Kezdőknek</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Változók, adatfajták, elágazások (if-else) és ciklusok (for, while) szintaxisának összefoglalója.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 2. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#5c2d91]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-globe mr-1"></i> Interaktív
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #2</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Algoritmusok Vizualizációja</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Rendezési és keresési algoritmusok működését bemutató interaktív online szemléltető eszköz.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 3. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#5c2d91]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-yellow-50 text-yellow-800 border border-yellow-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-code mr-1"></i> ZIP / Kód
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #3</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Gyakorló Feladatsor Megoldásokkal</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            20 kidolgozott alapfeladat kezdő programozóknak, részletes kódkommentekkel ellátva.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- 5. SZEKCIÓ: MOBILTECHNOLÓGIA                                      -->
+        <!-- ================================================================= -->
+        <section id="mobiltechnologia" class="section-block mb-10">
+            <div class="flex items-center space-x-3 mb-4 pb-2 border-b-2 border-[#008272]">
+                <div class="w-9 h-9 rounded-lg bg-teal-100 text-[#008272] flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 tracking-tight">Mobiltechnológia</h2>
+                    <p class="text-xs text-gray-500">Okoseszközök, mobil operációs rendszerek, appok és mobilbiztonság</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- 1. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#008272]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-pdf mr-1"></i> PDF
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #1</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Mobil Operációs Rendszerek Összehasonlítása</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Az Android és iOS rendszerek architektúrája, jogosultságkezelése és alapvető különbségei.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 2. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#008272]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-globe mr-1"></i> Weboldal
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #2</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Mobilalkalmazás-fejlesztés Alapjai</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Bevezetés a hibrid és natív mobilfejlesztésbe (React Native, Flutter, Swift, Kotlin).
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 3. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#008272]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-circle-play mr-1"></i> Videó
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #3</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Okoseszközök Biztonsági Beállításai</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Gyakorlati tanácsok a kétlépcsős azonosítás, adattitkosítás és alkalmazás-engedélyek beállításához.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- 6. SZEKCIÓ: SZÁMÍTÓGÉPES GRAFIKA ÉS MULTIMÉDIA                   -->
+        <!-- ================================================================= -->
+        <section id="grafika" class="section-block mb-10">
+            <div class="flex items-center space-x-3 mb-4 pb-2 border-b-2 border-[#b4009e]">
+                <div class="w-9 h-9 rounded-lg bg-pink-100 text-[#b4009e] flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-palette"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 tracking-tight">Számítógépes grafika és multimédia</h2>
+                    <p class="text-xs text-gray-500">Vektorgrafika, rasztergrafika, színmodellek, videó- és hangfeldolgozás</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- 1. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#b4009e]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-pdf mr-1"></i> PDF
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #1</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Vektorgrafika vs. Rasztergrafika</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Képméretek, felbontás (DPI/PPI), fájlformátumok (PNG, JPG, SVG, EPS) és színmodellek (RGB vs. CMYK).
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 2. Kártya -->
+                
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#b4009e]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-green-50 text-green-700 border border-green-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-image mr-1"></i> PNG / ZIP
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #2</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Képszerkesztési Mintaállományok</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Gyakorló képek rétegkezeléshez, kijelölésekhez és színkorrekcióhoz (Photoshop / GIMP).
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 3. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#b4009e]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-circle-play mr-1"></i> Videó
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #3</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Alapvető Videóvágási Technikák</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Vágás, átmenetek, hangcsökkentés és feliratozás alapjai ingyenes videóvágó programokban.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- 7. SZEKCIÓ: ONLINE KOMMUNIKÁCIÓ                                   -->
+        <!-- ================================================================= -->
+        <section id="kommunikacio" class="section-block mb-10">
+            <div class="flex items-center space-x-3 mb-4 pb-2 border-b-2 border-[#0078d4]">
+                <div class="w-9 h-9 rounded-lg bg-blue-100 text-[#0078d4] flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 tracking-tight">Online kommunikáció</h2>
+                    <p class="text-xs text-gray-500">Hálózatok, felhőszolgáltatások, adatvédelem, e-mail etika és biztonság</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- 1. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#0078d4]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-pdf mr-1"></i> PDF
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #1</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Netikett és E-mail Kommunikáció</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Az online illem és a hivatalos e-mailezés szabályai (megszólítás, tárgy mező, CC/BCC használat).
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 2. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#0078d4]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-globe mr-1"></i> Weboldal
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #2</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Felhőalapú Munkaterek (OneDrive / Teams)</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Közös dokumentumszerkesztés, fájlmegosztási jogosultságok és online értekezletek kezelése.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+                <!-- 3. Kártya -->
+
+                <!--
+                <div class="resource-card fluent-card p-5 flex flex-col justify-between border-l-4 border-l-[#0078d4]">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 bg-blue-50 text-[#185abd] border border-blue-200 text-[11px] font-bold rounded">
+                                <i class="fa-solid fa-file-word mr-1"></i> DOCX
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-mono">Segédlet #3</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-base mb-1.5">Adatvédelem és Adathalászat (Phishing)</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Útmutató a gyanús e-mailek, weboldalak felismeréséhez és a jelszavak védelméhez.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <a href="#" target="_blank" rel="noopener noreferrer" 
+                           class="fluent-btn px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 no-underline">
+                            <span>Megnyitás / Letöltés</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                -->
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================================================================= -->
+    <!-- LÁBLÉC (FOOTER)                                                   -->
+    <!-- ================================================================= -->
+    <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
+            <p class="mb-1 font-semibold text-gray-700">Tanulási segédletek &copy;</p>
+            <p>&nbsp;</p>
+        </div>
+    </footer>
+
+    <!-- ================================================================= -->
+    <!-- KERESŐ ÉS INTERAKTÍV JAVASCRIPT LOGIKA                             -->
+    <!-- ================================================================= -->
+    <script>
+        // Élő szűrés a kártyák között
+        function filterCards() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.resource-card');
+            const sections = document.querySelectorAll('.section-block');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    card.classList.remove('card-hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('card-hidden');
+                }
+            });
+
+            // Szekciók elrejtése, ha nincs bennük látható kártya
+            sections.forEach(section => {
+                const sectionCards = section.querySelectorAll('.resource-card:not(.card-hidden)');
+                if (sectionCards.length === 0 && query !== '') {
+                    section.classList.add('card-hidden');
+                } else {
+                    section.classList.remove('card-hidden');
+                }
+            });
+
+            // Nincs találat üzenet kezelése
+            const noResults = document.getElementById('noResults');
+            if (visibleCount === 0 && query !== '') {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+        // Keresés ürítése
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            filterCards();
+        }
+    </script>
+</body>
+</html>
