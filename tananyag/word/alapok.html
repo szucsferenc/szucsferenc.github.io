@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Word alapfunkciók</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        word: {
+                            50: '#f0f4fa',
+                            100: '#dbe5f5',
+                            500: '#185abd',
+                            600: '#103f91',
+                            700: '#0c2d69',
+                            ribbon: '#f3f2f1',
+                            border: '#e1dfdd'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Segoe UI', 'system-ui', 'sans-serif'],
+                        mono: ['Consolas', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            font-size: 18.66px;
+        }
+        .word-shadow {
+            box-shadow: 0 4px 20px -2px rgba(16, 63, 145, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.06);
+        }
+        .kbd-badge {
+            background-color: #f3f2f1;
+            border: 1px solid #adadad;
+            border-bottom: 2px solid #8a8a8a;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: Consolas, monospace;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #103f91;
+            display: inline-block;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #185abd;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #103f91;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Top Navigation Header (Word Ribbon Style) -->
+    <header class="bg-word-600 text-white sticky top-0 z-50 shadow-md">
+        <!-- Title Bar -->
+        <div class="px-4 py-2.5 flex items-center justify-between border-b border-word-700">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white text-word-600 w-9 h-9 rounded flex items-center justify-center font-bold text-xl shadow">
+                    W
+                </div>
+                <div>
+                    <h1 class="font-semibold text-lg leading-tight flex items-center gap-2">
+                        Microsoft Word alapfunkciók
+                        <span class="text-xs bg-word-500 text-white px-2 py-0.5 rounded-full font-normal border border-word-100/30">Tanulási segédlet a szövegszerkesztés alapjaihoz</span>
+                    </h1>
+                    <p class="text-xs text-word-100/80">Vizuális útmutató kezdőknek és haladóknak</p>
+                </div>
+            </div>
+
+            <!-- Quick Search Bar -->
+            <!--
+            <div class="relative hidden md:block w-72">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                <input type="text" id="globalSearch" onkeyup="filterCards()" placeholder="Keresés funkciókra, billentyűkre..." 
+                       class="w-full bg-word-700/60 text-white placeholder-word-100/60 text-xs rounded-md pl-8 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-white/50 transition">
+            </div>
+            -->
+
+        </div>
+
+        <!-- Ribbon Navigation Tabs -->
+        <nav class="bg-word-700 px-2 flex space-x-1 overflow-x-auto text-sm">
+            <button onclick="switchTab('all')" class="nav-tab active border-b-2 border-white font-medium px-4 py-2 text-white hover:bg-word-600/50 transition flex items-center gap-2">
+                <i class="fa-solid fa-border-all text-xs"></i> Összes témakör
+            </button>
+            <button onclick="switchTab('tortenet')" class="nav-tab border-b-2 border-transparent px-4 py-2 text-word-100 hover:text-white hover:bg-word-600/50 transition flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-xs"></i> Fejlődés és a Lorem Ipsum
+            </button>
+            <button onclick="switchTab('fajlok')" class="nav-tab border-b-2 border-transparent px-4 py-2 text-word-100 hover:text-white hover:bg-word-600/50 transition flex items-center gap-2">
+                <i class="fa-solid fa-file-lines text-xs"></i> Fájlok és műveletek
+            </button>
+            <button onclick="switchTab('szerkesztes')" class="nav-tab border-b-2 border-transparent px-4 py-2 text-word-100 hover:text-white hover:bg-word-600/50 transition flex items-center gap-2">
+                <i class="fa-solid fa-paragraph text-xs"></i> Szerkesztőkarakterek és szövegbevitel
+            </button>
+            <button onclick="switchTab('navigacio')" class="nav-tab border-b-2 border-transparent px-4 py-2 text-word-100 hover:text-white hover:bg-word-600/50 transition flex items-center gap-2">
+                <i class="fa-solid fa-compass text-xs"></i> Navigáció és kijelölés
+            </button>
+            <button onclick="switchTab('formazas')" class="nav-tab border-b-2 border-transparent px-4 py-2 text-word-100 hover:text-white hover:bg-word-600/50 transition flex items-center gap-2">
+                <i class="fa-solid fa-font text-xs"></i> Karakterformázás
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-8">
+
+        <!-- Mobile Search Input -->
+        <!--
+        <div class="md:hidden">
+            <input type="text" id="mobileSearch" onkeyup="syncAndFilter(this.value)" placeholder="🔎 Keresés funkciókra, billentyűkre..." 
+                   class="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-word-500">
+        </div>
+        -->
+
+        <!-- HERO / INTRO BANNER -->
+        <section class="bg-gradient-to-r from-word-600 to-word-500 text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                <i class="fa-solid fa-file-word text-[240px]"></i>
+            </div>
+            <div class="max-w-3xl relative z-10 space-y-3">
+                <span class="inline-block bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-word-50">
+                    Szemléltető tananyag és segédlet
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">A szövegszerkesztés alapjai Microsoft Wordben</h2>
+                <p class="text-word-100 text-sm sm:text-base leading-relaxed">
+                    Ezen az interaktív felületen áttekintheted a dokumentumszerkesztés fejlődését, a fájlformátumokat, a menüszalag felépítését, a rejtett szerkesztőjeleket, valamint a hatékony navigációs és formázási lépéseket példákkal és élő szimulációkkal kiegészítve.
+                </p>
+            </div>
+        </section>
+
+        <!-- SECTION 1: FEJLŐDÉSTÖRTÉNET & LOREM IPSUM -->
+        <section id="sec-tortenet" class="topic-section space-y-6">
+            <div class="border-l-4 border-word-500 pl-4 py-1 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">1. A szövegszerkesztés fejlődése és a "Lorem Ipsum"</h3>
+                    <p class="text-xs text-slate-500">A manuális betűszedéstől a modern digitális szövegszerkesztőkig</p>
+                </div>
+                <span class="bg-word-50 text-word-600 text-xs px-2.5 py-1 rounded-md font-medium">Történelem</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Timeline Card -->
+                <div class="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200 word-shadow space-y-4">
+                    <h4 class="font-bold text-word-600 flex items-center gap-2 border-b pb-3 border-slate-100">
+                        <i class="fa-solid fa-timeline"></i> A szövegszerkesztés mérföldkövei
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Step 1 -->
+                        <div class="p-4 rounded-lg border border-slate-100 bg-slate-50 hover:border-word-500 transition">
+                            <div class="flex items-center gap-2 text-word-600 font-bold text-sm mb-1">
+                                <span class="bg-word-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center">1</span>
+                                Könyvnyomtatás (15. sz.)
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-2">
+                                Johannes Gutenberg cserélhető fém betűdúcai forradalmasították a könyvkészítést a kézi kódexmásolás után.
+                            </p>
+                            <div class="bg-white p-2 rounded border border-slate-200 text-xs text-slate-500 italic">
+                                <strong>Példa:</strong> Gutenberg-biblia. A szöveg hibáinak javítása még az egész oldalas ólomszedés újraszedését igényelte.
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="p-4 rounded-lg border border-slate-100 bg-slate-50 hover:border-word-500 transition">
+                            <div class="flex items-center gap-2 text-word-600 font-bold text-sm mb-1">
+                                <span class="bg-word-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center">2</span>
+                                Mechanikus írógépek (19. sz.)
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-2">
+                                Billentyűnyomásra festékszalagon keresztül fém betűkar csapódott a papírra. Szabványosította a gyors gépelést.
+                            </p>
+                            <div class="bg-white p-2 rounded border border-slate-200 text-xs text-slate-500 italic">
+                                <strong>Példa:</strong> Remington írógép. A elgépelt karaktereket csak hibajavító festékkel vagy elölről gépeléssel lehetett javítani.
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="p-4 rounded-lg border border-slate-100 bg-slate-50 hover:border-word-500 transition">
+                            <div class="flex items-center gap-2 text-word-600 font-bold text-sm mb-1">
+                                <span class="bg-word-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center">3</span>
+                                Villanyírógépek (20. sz. közepe)
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-2">
+                                Elektromos motor hajtotta a leütést (pl. gömbfejes írógépek) és megjelent az egysoros digitális kijelző/memória.
+                            </p>
+                            <div class="bg-white p-2 rounded border border-slate-200 text-xs text-slate-500 italic">
+                                <strong>Példa:</strong> IBM Selectric. Nyomtatás előtt 1 sornyi szöveget még a gép memóriájában lehetett korrigálni.
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="p-4 rounded-lg border border-slate-100 bg-slate-50 hover:border-word-500 transition">
+                            <div class="flex items-center gap-2 text-word-600 font-bold text-sm mb-1">
+                                <span class="bg-word-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center">4</span>
+                                Szövegszerkesztő szoftverek (1980-)
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-2">
+                                Képernyőn történő teljes szerkesztés, korlátlan visszavonás, formázás és háttértárra mentés nyomtatás előtt.
+                            </p>
+                            <div class="bg-white p-2 rounded border border-slate-200 text-xs text-slate-500 italic">
+                                <strong>Példa:</strong> WordPerfect, WordStar, majd az 1983-ban megjelent Microsoft Word.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lorem Ipsum Card & Generator -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 word-shadow flex flex-col justify-between space-y-4">
+                    <div>
+                        <h4 class="font-bold text-word-600 flex items-center gap-2 border-b pb-3 border-slate-100">
+                            <i class="fa-solid fa-quote-left"></i> A "Lorem Ipsum" története
+                        </h4>
+                        <p class="text-xs text-slate-600 leading-relaxed mt-3">
+                            A <strong>Lorem ipsum</strong> nem értelmetlen halandzsa, hanem egy ókori latin mű torzított változata. Eredete <strong>Marcus Tullius Cicero</strong> i.e. 45-ben írt <em>"De finibus bonorum et malorum"</em> (A legfőbb jóról és rosszról) című filozófiai művére nyúlik vissza.
+                        </p>
+                        <p class="text-xs text-slate-600 leading-relaxed mt-2">
+                            <strong>Célja:</strong> Helykitöltő (vak)szövegként szolgál. Mivel a betűk eloszlása a természetes nyelvekét mintázza, a kiadványszerkesztők anélkül tesztelhetik az elrendezést és tipográfiát, hogy az olvasó figyelmét elterelné az értelmes tartalom.
+                        </p>
+                    </div>
+
+                    <!-- Interactive Generator Simulator -->
+                    <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-2 text-xs">
+                        <div class="font-semibold text-slate-700 flex justify-between items-center">
+                            <span>🎮 Word töltelékszöveg generáló:</span>
+                            <span class="kbd-badge">=lorem(bekezdés,mondat)</span>
+                        </div>
+                        <p class="text-slate-500">Írd be a Word dokumentumba a fenti parancsot számokkal [ pl. =lorem(3,10) ] és nyomj Entert!</p>
+                        <button onclick="generateLoremDemo()" class="w-full bg-word-500 hover:bg-word-600 text-white font-medium py-1.5 px-3 rounded transition text-xs flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play"></i> Teszteld: generálj 2 bekezdést!
+                        </button>
+                        <div id="loremOutput" class="hidden bg-white p-2.5 rounded border border-slate-200 text-xs text-slate-600 max-h-28 overflow-y-auto italic leading-normal">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: FÁJLOK & FÁJLMŰVELETEK -->
+        <section id="sec-fajlok" class="topic-section space-y-6">
+            <div class="border-l-4 border-word-500 pl-4 py-1 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">2. szövegfájlok típusai és a fájlműveletek</h3>
+                    <p class="text-xs text-slate-500">Formátumok jellemzői és az alapvető állománykezelő funkciók</p>
+                </div>
+                <span class="bg-word-50 text-word-600 text-xs px-2.5 py-1 rounded-md font-medium">Dokumentumkezelés</span>
+            </div>
+
+            <!-- File Formats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- .TXT -->
+                <div class="bg-white rounded-xl p-5 border border-slate-200 word-shadow hover:border-word-500 transition space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold bg-slate-100 text-slate-700 px-2 py-1 rounded">.TXT</span>
+                        <i class="fa-regular fa-file-lines text-2xl text-slate-400"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-sm">Egyszerű szöveg (Plain Text)</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Csak nyers karaktereket tárol. Semmilyen formázást (betűszín, betűstílus, képek) nem ment el. Cserébe bármilyen eszközzel megnyitható.
+                    </p>
+                    <div class="bg-slate-50 p-2 rounded text-xs text-slate-500 border border-slate-100">
+                        <strong>Példa:</strong> Jegyzettömbben (Notepad) írt programkódok, rendszerfájlok.
+                    </div>
+                </div>
+
+                <!-- .DOCX -->
+                <div class="bg-white rounded-xl p-5 border border-slate-200 word-shadow hover:border-word-500 transition space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold bg-word-50 text-word-600 px-2 py-1 rounded">.DOCX</span>
+                        <i class="fa-solid fa-file-word text-2xl text-word-500"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-sm">Word dokumentum (XML alapú)</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        A Microsoft Word alapértelmezett formátuma. Elmenti a teljes formázást, stílusokat, képeket, táblázatokat és elrendezést.
+                    </p>
+                    <div class="bg-slate-50 p-2 rounded text-xs text-slate-500 border border-slate-100">
+                        <strong>Példa:</strong> hivatalos levelek, szakdolgozatok, szerkeszthető beszámolók.
+                    </div>
+                </div>
+
+                <!-- .ODT -->
+                <div class="bg-white rounded-xl p-5 border border-slate-200 word-shadow hover:border-word-500 transition space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold bg-emerald-50 text-emerald-600 px-2 py-1 rounded">.ODT</span>
+                        <i class="fa-solid fa-file-code text-2xl text-emerald-500"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-sm">OpenDocument Szöveg</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Nyílt szabványú dokumentumformátum, melyet az ingyenes irodai szoftvercsomagok használnak, de a Word is képes megnyitni.
+                    </p>
+                    <div class="bg-slate-50 p-2 rounded text-xs text-slate-500 border border-slate-100">
+                        <strong>Példa:</strong> LibreOffice Writer vagy OpenOffice programmal készült iratok.
+                    </div>
+                </div>
+
+                <!-- .PDF -->
+                <div class="bg-white rounded-xl p-5 border border-slate-200 word-shadow hover:border-word-500 transition space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold bg-rose-50 text-rose-600 px-2 py-1 rounded">.PDF</span>
+                        <i class="fa-solid fa-file-pdf text-2xl text-rose-500"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-sm">Hordozható dokumentum</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Fix elrendezésű állomány. Minden számítógépen és nyomtatón pontosan ugyanúgy jelenik meg. Szerkesztése nehézkes.
+                    </p>
+                    <div class="bg-slate-50 p-2 rounded text-xs text-slate-500 border border-slate-100">
+                        <strong>Példa:</strong> számlák, végleges szerződések, nyomtatásra szánt e-könyvek.
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Operations Cards -->
+            <div class="bg-white rounded-xl p-6 border border-slate-200 word-shadow space-y-4">
+                <h4 class="font-bold text-word-600 flex items-center gap-2 border-b pb-3 border-slate-100">
+                    <i class="fa-solid fa-floppy-disk"></i> Fájlműveletek a szövegszerkesztőben
+                </h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-xs text-slate-800">Új dokumentum</span>
+                            <span class="kbd-badge">Ctrl + N</span>
+                        </div>
+                        <p class="text-xs text-slate-600">
+                            Új, üres dokumentumot nyit meg, vagy sablonok közül választva indít új fájlt.
+                        </p>
+                        <p class="text-xs text-word-600 italic">Példa: Fájl > Új > Üres dokumentum</p>
+                    </div>
+
+                    <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-xs text-slate-800">Mentés</span>
+                            <span class="kbd-badge">Ctrl + S</span>
+                        </div>
+                        <p class="text-xs text-slate-600">
+                            A megnyitott dokumentumban végzett friss módosításokat rögzíti a felülírási helyen.
+                        </p>
+                        <p class="text-xs text-word-600 italic">Példa: írás közben 5 percenként érdemes leütni.</p>
+                    </div>
+
+                    <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-xs text-slate-800">Mentés másként</span>
+                            <span class="kbd-badge">F12</span>
+                        </div>
+                        <p class="text-xs text-slate-600">
+                            A dokumentumot új néven, új mappába vagy más formátumba (pl. PDF-be) menti el.
+                        </p>
+                        <p class="text-xs text-word-600 italic">Példa: szerkesztett docx mentése PDF-ként.</p>
+                    </div>
+
+                    <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-xs text-slate-800">Megnyitás</span>
+                            <span class="kbd-badge">Ctrl + O</span>
+                        </div>
+                        <p class="text-xs text-slate-600">
+                            Egy már meglévő, háttértáron tárolt fájl betöltése a szerkesztőbe.
+                        </p>
+                        <p class="text-xs text-word-600 italic">Példa: Fájl > Megnyitás > Tallózás</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: MENÜSZALAGOK & SZERKESZTŐKARAKTEREK -->
+        <section id="sec-szerkesztes" class="topic-section space-y-6">
+            <div class="border-l-4 border-word-500 pl-4 py-1 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">3. Menüszalagok, szerkesztőjelek és szövegbevitel</h3>
+                    <p class="text-xs text-slate-500">Ezköztár felépítése, nem nyomtatható karakterek és gépelési szabályok</p>
+                </div>
+                <span class="bg-word-50 text-word-600 text-xs px-2.5 py-1 rounded-md font-medium">Szerkesztés</span>
+            </div>
+
+            <!-- Ribbon Tabs Overview -->
+            <div class="bg-white rounded-xl p-6 border border-slate-200 word-shadow space-y-4">
+                <h4 class="font-bold text-word-600 flex items-center gap-2 border-b pb-3 border-slate-100">
+                    <i class="fa-solid fa-layer-group"></i> A Word menüszalag (Ribbon) főbb lapfülei
+                </h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3 text-xs">
+                    <div class="p-3 border border-slate-200 rounded-lg bg-slate-50 space-y-1">
+                        <div class="font-bold text-word-600">1. Kezdőlap (Home)</div>
+                        <p class="text-slate-600">A leggyakrabban használt alapeszközök csoportjai: Vágólap, Betűtípus, Bekezdés, Stílusok, Szerkesztés</p>
+                    </div>
+                    <div class="p-3 border border-slate-200 rounded-lg bg-slate-50 space-y-1">
+                        <div class="font-bold text-word-600">2. Beszúrás (Insert)</div>
+                        <p class="text-slate-600">Külső elemek beillesztése: táblázatok, képek, alakzatok, oldalszámok, szimbólumok stb.</p>
+                    </div>
+                    <div class="p-3 border border-slate-200 rounded-lg bg-slate-50 space-y-1">
+                        <div class="font-bold text-word-600">3. Elrendezés (Layout)</div>
+                        <p class="text-slate-600">Oldalbeállítások: margók mérete, álló/fekvő tájolás, hasábok száma, behúzások, térközök stb.</p>
+                    </div>
+                    <div class="p-3 border border-slate-200 rounded-lg bg-slate-50 space-y-1">
+                        <div class="font-bold text-word-600">4. Hivatkozások (References)</div>
+                        <p class="text-slate-600">Dokumentumkellékek: automatikus tartalomjegyzék, lábjegyzetek, irodalomjegyzék stb.</p>
+                    </div>
+                    <div class="p-3 border border-slate-200 rounded-lg bg-slate-50 space-y-1">
+                        <div class="font-bold text-word-600">5. Nézet (View)</div>
+                        <p class="text-slate-600">Megjelenítési módok: olvasási nézet, nyomtatási elrendezés, vonalzó ki/bekapcsolása, nagyítás (Zoom) stb.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Non-Printing Characters Simulator Card -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Non-printing Symbols Guide -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 word-shadow space-y-4">
+                    <div class="flex items-center justify-between border-b pb-3 border-slate-100">
+                        <h4 class="font-bold text-word-600 flex items-center gap-2">
+                            <i class="fa-solid fa-paragraph"></i> Szerkesztőkarakterek (rejtett jelek)
+                        </h4>
+                        <span class="kbd-badge">¶</span>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <div class="flex items-start gap-3 p-2 bg-slate-50 rounded">
+                            <span class="text-base font-bold text-word-600 w-6 text-center">¶</span>
+                            <div>
+                                <strong class="text-slate-800">Bekezdésvégjel (Enter):</strong> Új bekezdést indít. A bekezdéshez tartozó térköz- és igazítási tulajdonságok ebben a jelben tárolódnak.
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-2 bg-slate-50 rounded">
+                            <span class="text-base font-bold text-word-600 w-6 text-center">↵</span>
+                            <div>
+                                <strong class="text-slate-800">Bekezdésen belüli sortörés (Shift + Enter):</strong> Új sorba lép anélkül, hogy új bekezdést indítana.
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-2 bg-slate-50 rounded">
+                            <span class="text-base font-bold text-word-600 w-6 text-center">→</span>
+                            <div>
+                                <strong class="text-slate-800">Tabulátorjel (Tab):</strong> A kurzort a megadott tabulátorpontra ugrasztja oszlopszerű elrendezés készítéséhez.
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-2 bg-slate-50 rounded">
+                            <span class="text-base font-bold text-word-600 w-6 text-center">·</span>
+                            <div>
+                                <strong class="text-slate-800">Szóköz (Space):</strong> Egyetlen pontként jelenik meg a szavak között. Segít felderíteni a felesleges dupla szóközöket.
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-2 bg-slate-50 rounded">
+                            <span class="text-base font-bold text-word-600 w-6 text-center">°</span>
+                            <div>
+                                <strong class="text-slate-800">Nem törhető szóköz (Ctrl + Shift + Space):</strong> Megakadályozza, hogy a sor végén két szó (pl. szám és mértékegység: 10 km) elváljon egymástól.
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-2 bg-slate-50 rounded">
+                            <span class="text-base font-bold text-word-600 w-6 text-center">...</span>
+                            <div>
+                                <strong class="text-slate-800">Oldaltörés (Ctrl + Enter):</strong> A kurzort egy új oldal tetejére viszi át.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Symbol Toggle Playground -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 word-shadow flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between border-b pb-3 border-slate-100">
+                            <h4 class="font-bold text-word-600 flex items-center gap-2">
+                                <i class="fa-solid fa-eye"></i> Interaktív szerkesztőjel szimulátor
+                            </h4>
+                            <button id="toggleMarksBtn" onclick="toggleFormattingMarks()" class="bg-word-500 hover:bg-word-600 text-white text-xs px-3 py-1.5 rounded transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-paragraph"></i> <span id="toggleMarksText">¶ Jelek bekapcsolása</span>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">
+                            Kattints a gombra a rejtett karakterek (szóközök, bekezdésjelek, tabulátorok) megjelenítéséhez a mintaszövegben!
+                        </p>
+                    </div>
+
+                    <!-- Simulated Word Page Canvas -->
+                    <div id="wordCanvas" class="bg-white border-2 border-slate-300 p-6 rounded-md shadow-inner text-sm font-sans leading-relaxed text-slate-800 space-y-3 min-h-[180px]">
+                        <p class="paragraph-line">
+                            Kedves<span class="mark-space hidden text-word-500 font-bold">·</span>Kollégák!<span class="mark-para hidden text-word-500 font-bold ml-1">¶</span>
+                        </p>
+                        <p class="paragraph-line">
+                            Ez<span class="mark-space hidden text-word-500 font-bold">·</span>egy<span class="mark-space hidden text-word-500 font-bold">·</span>mintaszöveg.<span class="mark-break hidden text-word-500 font-bold ml-1">↵</span><br>
+                            Ez<span class="mark-space hidden text-word-500 font-bold">·</span>még<span class="mark-space hidden text-word-500 font-bold">·</span>ugyanaz<span class="mark-space hidden text-word-500 font-bold">·</span>a<span class="mark-space hidden text-word-500 font-bold">·</span>bekezdés.<span class="mark-para hidden text-word-500 font-bold ml-1">¶</span>
+                        </p>
+                        <p class="paragraph-line">
+                            Tétel<span class="mark-tab hidden text-word-500 font-bold mx-2">────→</span>Ár:<span class="mark-nbsp hidden text-word-500 font-bold">°</span>1500<span class="mark-space hidden text-word-500 font-bold">·</span>Ft<span class="mark-para hidden text-word-500 font-bold ml-1">¶</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 text-amber-800 p-2.5 rounded text-xs">
+                        <strong>📌 Tudtad?</strong> Nyomtatásban a szerkesztőkarakterek <u>sosem látszódnak</u>, kizárólag a képernyőn segítik a pontos elrendezést.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Input & Editing Features Grid -->
+            <div class="bg-white rounded-xl p-6 border border-slate-200 word-shadow space-y-4">
+                <h4 class="font-bold text-word-600 flex items-center gap-2 border-b pb-3 border-slate-100">
+                    <i class="fa-solid fa-pen-to-square"></i> Szövegbeviteli és javítási lehetőségek
+                </h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                    <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-1.5">
+                        <div class="font-bold text-slate-800">1. Automatikus soremelés (Word Wrap)</div>
+                        <p class="text-slate-600">
+                            Gépeléskor nem kell a sor végén Entert nyomni. A szövegszerkesztők automatikusan átteszik a hosszú szót a következő sorba.
+                        </p>
+                        <div class="text-xs text-word-600 italic">Entert csak új bekezdés indításakor nyomunk!</div>
+                    </div>
+
+                    <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-slate-800">2. Backspace vagy Delete</span>
+                            <span class="kbd-badge"> ←- / Del</span>
+                        </div>
+                        <p class="text-slate-600">
+                            <strong>Backspace:</strong> A kurzortól <u>balra</u> lévő karaktert törli.<br>
+                            <strong>Delete:</strong> A kurzortól <u>jobbra</u> lévő karaktert törli.
+                        </p>
+                        <div class="text-xs text-word-600 italic">Ctrl+Backspace: teljes szó törlése balra.</div>
+                    </div>
+
+                    <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-slate-800">3. Helyesírás-ellenőrzés</span>
+                            <span class="kbd-badge">F7</span>
+                        </div>
+                        <p class="text-slate-600">
+                            <span class="underline decoration-red-500 decoration-wavy">Piros hullám:</span> helyesírási / gépelési hiba.<br>
+                            <span class="underline decoration-blue-500 decoration-wavy">Kék hullám:</span> grammatikai vagy stilisztikai eltérés.
+                        </p>
+                        <div class="text-xs text-word-600 italic">Jobb klikk a szón a javítási javaslatokhoz!</div>
+                    </div>
+
+                    <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-slate-800">4. Keresés és csere</span>
+                            <span class="kbd-badge">Ctrl + H</span>
+                        </div>
+                        <p class="text-slate-600">
+                            Megkeres egy adott kifejezést a dokumentumban, és automatikusan kicseréli egy másikra a dokumentumban.
+                        </p>
+                        <p class="text-xs text-word-600 italic">Példa: "2025" évszámok tömeges cseréje "2026"-ra.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: NAVIGÁCIÓ & KIJELÖLÉS -->
+        <section id="sec-navigacio" class="topic-section space-y-6">
+            <div class="border-l-4 border-word-500 pl-4 py-1 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">4. Navigáció és kijelölés a szövegben</h3>
+                    <p class="text-xs text-slate-500">Gyors mozgás és hatékony kijelölési műveletek egérrel és billentyűzettel</p>
+                </div>
+                <span class="bg-word-50 text-word-600 text-xs px-2.5 py-1 rounded-md font-medium">Gyorsbillentyűk</span>
+            </div>
+
+            <!-- Navigation Shortcuts Table -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Navigation -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 word-shadow space-y-4">
+                    <h4 class="font-bold text-word-600 flex items-center gap-2 border-b pb-3 border-slate-100">
+                        <i class="fa-solid fa-arrows-to-dot"></i> Navigáció (mozgás a szövegben)
+                    </h4>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700">
+                                    <th class="p-2 border border-slate-200">Cél / Lépés</th>
+                                    <th class="p-2 border border-slate-200">Billentyűzet</th>
+                                    <th class="p-2 border border-slate-200">Példa / Használat</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-600">
+                                <tr>
+                                    <td class="p-2 border border-slate-200 font-medium text-slate-800">Karakter / sor léptetés</td>
+                                    <td class="p-2 border border-slate-200"><span class="kbd-badge">←</span> <span class="kbd-badge">→</span> <span class="kbd-badge">↑</span> <span class="kbd-badge">↓</span></td>
+                                    <td class="p-2 border border-slate-200">Egyesével lépteti a kurzort.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 border border-slate-200 font-medium text-slate-800">Szavankénti ugrás</td>
+                                    <td class="p-2 border border-slate-200"><span class="kbd-badge">Ctrl</span> + <span class="kbd-badge">← / →</span></td>
+                                    <td class="p-2 border border-slate-200">Egész szavakat ugrik át balra/jobbra.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 border border-slate-200 font-medium text-slate-800">Sor eleje / végére ugrás</td>
+                                    <td class="p-2 border border-slate-200"><span class="kbd-badge">Home</span> / <span class="kbd-badge">End</span></td>
+                                    <td class="p-2 border border-slate-200">A kurzort az aktuális sor szélére viszi.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 border border-slate-200 font-medium text-slate-800">Bekezdés ugrás</td>
+                                    <td class="p-2 border border-slate-200"><span class="kbd-badge">Ctrl</span> + <span class="kbd-badge">↑ / ↓</span></td>
+                                    <td class="p-2 border border-slate-200">A következő/előző bekezdés elejére ugrik.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 border border-slate-200 font-medium text-slate-800">Dokumentum eleje / vége</td>
+                                    <td class="p-2 border border-slate-200"><span class="kbd-badge">Ctrl</span> + <span class="kbd-badge">Home / End</span></td>
+                                    <td class="p-2 border border-slate-200">A teljes irat legelső vagy legutolsó pontjára ugrik.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Selection Guide -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 word-shadow space-y-4">
+                    <h4 class="font-bold text-word-600 flex items-center gap-2 border-b pb-3 border-slate-100">
+                        <i class="fa-solid fa-i-cursor"></i> Kijelölés egérrel és billentyűzettel
+                    </h4>
+
+                    <div class="space-y-3 text-xs">
+                        <div class="p-2.5 bg-slate-50 rounded border border-slate-100 space-y-1">
+                            <div class="font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-computer-mouse text-word-500"></i>Kijelölési trükkök egérrel:
+                            </div>
+                            <ul class="list-disc list-inside text-slate-600 space-y-0.5 pl-1">
+                                <li><strong>Egyetlen szó:</strong> dupla kattintás a szóra.</li>
+                                <li><strong>Egyetlen mondat:</strong> <span class="kbd-badge">Ctrl</span> + kattintás bárhol a mondatban.</li>
+                                <li><strong>Egy teljes bekezdés:</strong> tripla kattintás a bekezdésben.</li>
+                                <li><strong>Teljes sor:</strong> kattintás a bal oldali margón (a kurzor nyíllá válik).</li>
+                                <li><strong>Függőleges kijelölés:</strong> <span class="kbd-badge">Alt</span> nyomvatartása + egérhúzás.</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-2.5 bg-slate-50 rounded border border-slate-100 space-y-1">
+                            <div class="font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-keyboard text-word-500"></i> Billentyűs kijelölések:
+                            </div>
+                            <ul class="list-disc list-inside text-slate-600 space-y-0.5 pl-1">
+                                <li><strong>Karakterek kijelölése:</strong> <span class="kbd-badge">Shift</span> + <span class="kbd-badge">← / →</span></li>
+                                <li><strong>Szavak kijelölése:</strong> <span class="kbd-badge">Ctrl</span> + <span class="kbd-badge">Shift</span> + <span class="kbd-badge">← / →</span></li>
+                                <li><strong>Bekezdések kijelölése:</strong> <span class="kbd-badge">Ctrl</span> + <span class="kbd-badge">Shift</span> + <span class="kbd-badge">↑ / ↓</span></li>
+                                <li><strong>Sor elejéig / végéig kijelölés:</strong> <span class="kbd-badge">Shift</span> + <span class="kbd-badge">End / Home</span></li>
+                                <li><strong>Teljes dokumentum kijelölése:</strong> <span class="kbd-badge">Ctrl</span> + <span class="kbd-badge">A</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Selection Simulator Playground -->
+            <!--
+            <div class="bg-white rounded-xl p-6 border border-slate-200 word-shadow space-y-4">
+                <div class="flex items-center justify-between border-b pb-3 border-slate-100">
+                    <h4 class="font-bold text-word-600 flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Interaktív kijelölési szimulátor játszótér
+                    </h4>
+                    <span class="text-xs text-slate-500">Próbáld ki az egérkattintásos trükköket élőben!</span>
+                </div>
+
+                <div class="p-4 bg-word-50/50 rounded-lg border border-word-100 text-xs text-slate-700 space-y-2">
+                    <p class="font-semibold text-word-600">💡 Próbáld ki az alábbi dobozban:</p>
+                    <ol class="list-decimal list-inside space-y-1 text-slate-600">
+                        <li>Kattints <strong>duplán</strong> egy szóra a kijelöléséhez!</li>
+                        <li>Nyomd le a <strong>Ctrl</strong> gombot és kattints a mondatban a teljes mondat kijelöléséhez!</li>
+                        <li>Kattints <strong>triplán</strong> a bekezdésre a teljes bekezdés kijelöléséhez!</li>
+                    </ol>
+                </div>
+
+                <div id="selectionDemoBox" class="p-6 bg-white border-2 border-word-500 rounded-md text-sm text-slate-800 leading-relaxed cursor-text selection:bg-word-500 selection:text-white">
+                    A Microsoft Word szoftverben a pontos kijelölés a hatékony munkavégzés alapja. Ha duplán kattintasz egy szóra, az a szó azonnal kijelölődik. Amennyiben a Ctrl billentyűt nyomva tartod és bárhová kattintasz a mondatban, a teljes mondat kijelölésre kerül. Tripla kattintással pedig az egész bekezdés egyetlen pillanat alatt kiválaszthatóvá válik!
+                </div>
+            </div>
+            -->
+        </section>
+
+        <!-- SECTION 5: KARAKTERTULAJDONSÁGOK -->
+        <section id="sec-formazas" class="topic-section space-y-6">
+            <div class="border-l-4 border-word-500 pl-4 py-1 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">5. Karaktertulajdonságok (betűformázás)</h3>
+                    <p class="text-xs text-slate-500">Betűtípusok, méretek, stílusok és speciális hatások</p>
+                </div>
+                <span class="bg-word-50 text-word-600 text-xs px-2.5 py-1 rounded-md font-medium">Tipográfia</span>
+            </div>
+
+            <!-- Formatting Options Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Font Family & Size -->
+                <div class="bg-white rounded-xl p-5 border border-slate-200 word-shadow space-y-3">
+                    <h4 class="font-bold text-word-600 text-sm flex items-center gap-2 border-b pb-2 border-slate-100">
+                        <i class="fa-solid fa-text-height"></i> Betűtípus és betűméret
+                    </h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        <strong>Betűtípus (Font family):</strong> Szokás szerint talpas (serif: Times New Roman, Cambria) vagy talpatlan (sans-serif: Arial, Calibri, Segoe UI) betűcsaládokat használunk.
+                    </p>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        <strong>Betűméret (Font size):</strong> Pontban (pt) mérjük. Normál törzsszöveg: 11-12 pt, Címsorok: 14-20 pt.
+                    </p>
+                    <div class="bg-slate-50 p-2 rounded text-xs text-slate-500 border border-slate-100">
+                        <strong>Billentyűparancs:</strong> méret növelése: <span class="kbd-badge">A<sup>^</sup></span> | csökkentése: <span class="kbd-badge">A<sup>ˇ</sup></span>
+                    </div>
+                </div>
+
+                <!-- Font Styles & Shortcuts -->
+                <div class="bg-white rounded-xl p-5 border border-slate-200 word-shadow space-y-3">
+                    <h4 class="font-bold text-word-600 text-sm flex items-center gap-2 border-b pb-2 border-slate-100">
+                        <i class="fa-solid fa-bold"></i> Betűstílusok (kiemelések)
+                    </h4>
+                    <ul class="text-xs space-y-2 text-slate-600">
+                        <li class="flex justify-between items-center">
+                            <span><strong>Félkövér (Bold):</strong> kulcsszavak kiemelése</span>
+                            <span class="kbd-badge">Ctrl + B</span>
+                        </li>
+                        <li class="flex justify-between items-center">
+                            <span><em>Dőlt (Italic):</em> idézetek, idegen szavak</span>
+                            <span class="kbd-badge">Ctrl + I</span>
+                        </li>
+                        <li class="flex justify-between items-center">
+                            <span><u>Aláhúzott (Underline):</u> hivatkozások</span>
+                            <span class="kbd-badge">Ctrl + U</span>
+                        </li>
+                        <li class="flex justify-between items-center">
+                            <span><s>Áthúzott (Strikethrough):</s> törölt tartalom</span>
+                            <span class="bg-slate-100 text-slate-500 text-xs px-1.5 py-0.5 rounded"><del>ab</del></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Indexes & Colors -->
+                <div class="bg-white rounded-xl p-5 border border-slate-200 word-shadow space-y-3">
+                    <h4 class="font-bold text-word-600 text-sm flex items-center gap-2 border-b pb-2 border-slate-100">
+                        <i class="fa-solid fa-palette"></i> Indexek és betűszínek
+                    </h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        <strong>Alsó index (H₂O):</strong> kémiai képletekhez <span class="kbd-badge">x<sup>2</sup></span><br>
+                        <strong>Felső index (m²):</strong> matematikai hatványokhoz <span class="kbd-badge">x<sub>2</sub></span>
+                    </p>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        <strong>Betűszín:</strong> maguknak a karaktereknek a színe.<br>
+                        <strong>Kiemelőszín:</strong> "filccel" való háttérkiemelés a szöveg mögött.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Live Text Formatter Playground -->
+            <div class="bg-white rounded-xl p-6 border border-slate-200 word-shadow space-y-4">
+                <h4 class="font-bold text-word-600 flex items-center gap-2 border-b pb-3 border-slate-100">
+                    <i class="fa-solid fa-sliders"></i> Élő karakterformázó szimulátor és játszótér
+                </h4>
+
+                <!-- Control Toolbar -->
+                <div class="bg-slate-100 p-3 rounded-lg border border-slate-200 flex flex-wrap gap-3 items-center text-xs">
+                    <!-- Font Family Select -->
+                    <select id="fmtFont" onchange="applyFormatting()" class="bg-white border border-slate-300 rounded px-2 py-1 focus:outline-none">
+                        <option value="Segoe UI">Segoe UI (Sans-serif)</option>
+                        <option value="Times New Roman">Times New Roman (Serif)</option>
+                        <option value="Courier New">Courier New (Monospace)</option>
+                        <option value="Georgia">Georgia</option>
+                    </select>
+
+                    <!-- Size Select (+2 pt options) -->
+                    <select id="fmtSize" onchange="applyFormatting()" class="bg-white border border-slate-300 rounded px-2 py-1 focus:outline-none">
+                        <option value="14px">14 pt</option>
+                        <option value="16px">16 pt</option>
+                        <option value="20px" selected>20 pt</option>
+                        <option value="26px">26 pt</option>
+                    </select>
+
+                    <div class="h-5 w-px bg-slate-300"></div>
+
+                    <!-- Style Toggles -->
+                    <button onclick="toggleFmtBtn('btnBold')" id="btnBold" class="w-7 h-7 bg-white border border-slate-300 font-bold rounded hover:bg-slate-50 transition">B</button>
+                    <button onclick="toggleFmtBtn('btnItalic')" id="btnItalic" class="w-7 h-7 bg-white border border-slate-300 italic rounded hover:bg-slate-50 transition">I</button>
+                    <button onclick="toggleFmtBtn('btnUnderline')" id="btnUnderline" class="w-7 h-7 bg-white border border-slate-300 underline rounded hover:bg-slate-50 transition">U</button>
+                    <button onclick="toggleFmtBtn('btnStrike')" id="btnStrike" class="w-7 h-7 bg-white border border-slate-300 line-through rounded hover:bg-slate-50 transition">S</button>
+
+                    <div class="h-5 w-px bg-slate-300"></div>
+
+                    <!-- Text Color -->
+                    <div class="flex items-center gap-1">
+                        <label for="fmtColor" class="text-slate-600 font-medium">Betűszín:</label>
+                        <input type="color" id="fmtColor" value="#103f91" onchange="applyFormatting()" class="w-6 h-6 border-0 bg-transparent cursor-pointer">
+                    </div>
+
+                    <!-- Highlight Color -->
+                    <div class="flex items-center gap-1">
+                        <label for="fmtBg" class="text-slate-600 font-medium">Kiemelés:</label>
+                        <input type="color" id="fmtBg" value="#fef08a" onchange="applyFormatting()" class="w-6 h-6 border-0 bg-transparent cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Preview Area -->
+                <div class="p-6 bg-slate-50 rounded-lg border border-slate-200 min-h-[100px] flex items-center justify-center">
+                    <p id="fmtPreviewText" class="text-center transition-all duration-150">
+                        Ez a mintaszöveg a Word karakterformázó beállításait szemlélteti.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer / Status Bar -->
+    <footer class="bg-word-600 text-white text-xs py-3 px-4 border-t border-word-700 mt-8">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="flex items-center space-x-4">
+                <span><i class="fa-solid fa-file-word mr-1"></i> Dokumentum: word_alapfunkciók.docx</span>
+                <span class="hidden md:inline">|</span>
+                <span class="hidden md:inline">Oldal: 1 / 1</span>
+                <span class="hidden md:inline">Szavak száma: 1420</span>
+            </div>
+            <div class="text-word-100/80 text-center sm:text-right">
+                Microsoft Word alapfunkciók • Készült a jobb megértés céljából<br>Szűcs Ferenc • CC BY-NC-SA
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive JavaScript Logic -->
+    <script>
+        // Tab Switcher Logic
+        function switchTab(tabId) {
+            // Update active state on tab buttons
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active', 'border-white', 'text-white');
+                tab.classList.add('border-transparent', 'text-word-100');
+            });
+
+            event.currentTarget.classList.add('active', 'border-white', 'text-white');
+            event.currentTarget.classList.remove('border-transparent', 'text-word-100');
+
+            // Show/Hide sections
+            const sections = document.querySelectorAll('.topic-section');
+            sections.forEach(sec => {
+                if (tabId === 'all') {
+                    sec.classList.remove('hidden');
+                } else {
+                    if (sec.id === 'sec-' + tabId) {
+                        sec.classList.remove('hidden');
+                    } else {
+                        sec.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        // Global Search Filter
+        function filterCards() {
+            const query = document.getElementById('globalSearch').value.toLowerCase();
+            searchInText(query);
+        }
+
+        function syncAndFilter(val) {
+            document.getElementById('globalSearch').value = val;
+            searchInText(val.toLowerCase());
+        }
+
+        function searchInText(query) {
+            const cards = document.querySelectorAll('.topic-section, .word-shadow');
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+            if (!query) {
+                cards.forEach(card => card.style.display = "");
+            }
+        }
+
+        // Lorem Ipsum Generator Demo
+        function generateLoremDemo() {
+            const out = document.getElementById('loremOutput');
+            out.classList.remove('hidden');
+            out.innerHTML = `
+                <p class="mb-2"><strong>1. bekezdés:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <p><strong>2. bekezdés:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            `;
+        }
+
+        // Formatting Marks Toggle Logic
+        let marksVisible = false;
+        function toggleFormattingMarks() {
+            marksVisible = !marksVisible;
+            const marks = document.querySelectorAll('.mark-space, .mark-para, .mark-break, .mark-tab, .mark-nbsp');
+            const btnText = document.getElementById('toggleMarksText');
+
+            marks.forEach(m => {
+                if (marksVisible) {
+                    m.classList.remove('hidden');
+                } else {
+                    m.classList.add('hidden');
+                }
+            });
+
+            if (marksVisible) {
+                btnText.innerText = "¶ Jelek elrejtése";
+            } else {
+                btnText.innerText = "¶ Jelek bekapcsolása";
+            }
+        }
+
+        // Live Text Formatting Controls
+        function toggleFmtBtn(btnId) {
+            const btn = document.getElementById(btnId);
+            btn.classList.toggle('bg-word-500');
+            btn.classList.toggle('text-white');
+            btn.classList.toggle('bg-white');
+            applyFormatting();
+        }
+
+        function applyFormatting() {
+            const text = document.getElementById('fmtPreviewText');
+            const font = document.getElementById('fmtFont').value;
+            const size = document.getElementById('fmtSize').value;
+            const color = document.getElementById('fmtColor').value;
+            const bg = document.getElementById('fmtBg').value;
+
+            const isBold = document.getElementById('btnBold').classList.contains('bg-word-500');
+            const isItalic = document.getElementById('btnItalic').classList.contains('bg-word-500');
+            const isUnderline = document.getElementById('btnUnderline').classList.contains('bg-word-500');
+            const isStrike = document.getElementById('btnStrike').classList.contains('bg-word-500');
+
+            text.style.fontFamily = font;
+            text.style.fontSize = size;
+            text.style.color = color;
+            text.style.backgroundColor = bg;
+
+            text.style.fontWeight = isBold ? 'bold' : 'normal';
+            text.style.fontStyle = isItalic ? 'italic' : 'normal';
+
+            let textDecor = [];
+            if (isUnderline) textDecor.push('underline');
+            if (isStrike) textDecor.push('line-through');
+            text.style.textDecoration = textDecor.join(' ') || 'none';
+        }
+
+        // Initialize default formatting state on load
+        window.addEventListener('DOMContentLoaded', () => {
+            applyFormatting();
+        });
+    </script>
+</body>
+</html>
