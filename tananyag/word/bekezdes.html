@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word bekezdésformázás</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html {
+            font-size: 18px; /* Alapértelmezett betűméret megnövelése +2pt-al (16px -> 18px) */
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f2f1;
+            color: #323130;
+        }
+        .word-blue { background-color: #185abd; }
+        .word-blue-dark { background-color: #103f8a; }
+        .word-ribbon-bg { background-color: #f3f2f1; }
+        .word-border { border-color: #e1dfdd; }
+        
+        /* Word document shadow and style */
+        .word-page {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
+            min-height: 800px;
+            transition: all 0.2s ease;
+        }
+
+        /* Non-printing character visual simulation */
+        .npc-space {
+            position: relative;
+            white-space: pre-wrap;
+        }
+        .npc-space::after {
+            content: "•";
+            color: #2b579a;
+            font-weight: bold;
+            opacity: 0.6;
+            font-size: 0.8em;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        .npc-nbsp {
+            position: relative;
+            white-space: nowrap;
+        }
+        .npc-nbsp::after {
+            content: "°";
+            color: #d9381e;
+            font-weight: bold;
+            opacity: 0.8;
+            font-size: 0.9em;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        .npc-tab::after { content: "➔"; color: #008272; font-weight: bold; opacity: 0.6; font-size: 0.8em; margin: 0 4px; }
+        .npc-para::after { content: "¶"; color: #185abd; font-weight: bold; opacity: 0.7; margin-left: 2px; }
+        .npc-line::after { content: "↵"; color: #b4009e; font-weight: bold; opacity: 0.7; margin-left: 2px; }
+
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c8c6c4; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a19f9d; }
+
+        /* Ruler style */
+        .ruler-bg {
+            background-image: repeating-linear-gradient(to right, #a19f9d 0, #a19f9d 1px, transparent 1px, transparent 10px);
+            background-size: 10px 100%;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-100">
+
+    <!-- Top Bar / Word Header -->
+    <header class="word-blue text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white text-[#185abd] w-8 h-8 rounded flex items-center justify-center font-bold text-xl shadow">
+                    W
+                </div>
+                <div>
+                    <h1 class="text-lg font-semibold leading-tight">Bekezdésformázás a Wordben</h1>
+                    <p class="text-xs text-blue-100">Szemléltető tudásbázis és elrendezés-szimulátor</p>
+                </div>
+            </div>
+            
+            <!-- Quick View Switcher -->
+            <nav class="hidden md:flex space-x-1 text-sm bg-blue-800/40 p-1 rounded-lg">
+                <button onclick="switchTab('infographic')" id="btn-tab-infographic" class="px-3 py-1.5 rounded-md font-medium transition bg-white text-[#185abd] shadow-sm">
+                    <i class="fa-solid fa-book-open mr-1.5"></i>Tudásbázis
+                </button>
+                <button onclick="switchTab('sandbox')" id="btn-tab-sandbox" class="px-3 py-1.5 rounded-md font-medium transition text-white hover:bg-white/10">
+                    <i class="fa-solid fa-sliders mr-1.5"></i>Interaktív gyakorlótér
+                </button>
+                <button onclick="switchTab('quiz')" id="btn-tab-quiz" class="px-3 py-1.5 rounded-md font-medium transition text-white hover:bg-white/10">
+                    <i class="fa-solid fa-graduation-cap mr-1.5"></i>Tudáspróba
+                </button>
+            </nav>
+        </div>
+
+        <!-- Simulated Ribbon Quick Access -->
+        <div class="bg-[#f3f2f1] text-gray-800 border-b border-gray-300 px-4 py-1.5 text-xs flex flex-wrap items-center gap-3">
+            <span class="font-semibold text-gray-600 uppercase text-[10px] tracking-wider">Gyorsvezérlők:</span>
+            
+            <button onclick="toggleGlobalNPC()" id="global-npc-btn" class="flex items-center space-x-1 px-2.5 py-1 rounded bg-white border border-gray-300 hover:bg-gray-50 shadow-sm active:translate-y-0.5 transition">
+                <span class="font-bold text-[#185abd]">¶</span>
+                <span>Minden látszik</span>
+            </button>
+
+            <div class="h-4 w-[1px] bg-gray-300"></div>
+
+            <!-- Alignment shortcuts -->
+            <div class="flex bg-white rounded border border-gray-300 p-0.5 shadow-sm">
+                <button onclick="applyAlignment('left')" class="p-1 hover:bg-gray-100 rounded text-gray-700" title="Balra igazítás"><i class="fa-solid fa-align-left w-4 text-center"></i></button>
+                <button onclick="applyAlignment('center')" class="p-1 hover:bg-gray-100 rounded text-gray-700" title="Középre igazítás"><i class="fa-solid fa-align-center w-4 text-center"></i></button>
+                <button onclick="applyAlignment('right')" class="p-1 hover:bg-gray-100 rounded text-gray-700" title="Jobbra igazítás"><i class="fa-solid fa-align-right w-4 text-center"></i></button>
+                <button onclick="applyAlignment('justify')" class="p-1 hover:bg-gray-100 rounded text-gray-700" title="Sorkizárás"><i class="fa-solid fa-align-justify w-4 text-center"></i></button>
+            </div>
+
+            <div class="h-4 w-[1px] bg-gray-300"></div>
+
+            <span class="text-gray-500 hidden lg:inline">A fenti gombokkal azonnal tesztelheted a bekezdésbeállításokat!</span>
+        </div>
+    </header>
+
+    <!-- Navigation for mobile -->
+    <div class="md:hidden flex border-b bg-white text-xs text-gray-700 divide-x">
+        <button onclick="switchTab('infographic')" class="flex-1 py-2 text-center font-medium bg-blue-50 text-[#185abd]">Tudásbázis</button>
+        <button onclick="switchTab('sandbox')" class="flex-1 py-2 text-center font-medium">Gyakorlótér</button>
+        <button onclick="switchTab('quiz')" class="flex-1 py-2 text-center font-medium">Tudáspróba</button>
+    </div>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 space-y-6">
+
+        <!-- TAB 1: INFOGRAPHIC / KNOWLEDGE BASE -->
+        <section id="tab-infographic" class="space-y-8">
+            
+            <!-- Hero banner -->
+            <div class="bg-gradient-to-r from-[#185abd] to-[#103f8a] text-white rounded-xl p-6 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-2 max-w-2xl">
+                    <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-200 text-[#103f8a]">Személtető tananyag és segédlet</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold">Dokumentumszerkezet és bekezdésformázás</h2>
+                    <p class="text-blue-100 text-sm leading-relaxed">
+                        A jó dokumentum nemcsak tartalmában, de megjelenésében is rendezett. Ismerd meg a Word szerkesztési egységeit, a bekezdésigazításokat, behúzásokat és a szerkesztőkaraktereket az interaktív példák segítségével!
+                    </p>
+                </div>
+                <div class="flex items-center justify-center bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/20 min-w-[200px] text-center">
+                    <div>
+                        <i class="fa-solid fa-paragraph text-4xl text-blue-200 mb-2"></i>
+                        <p class="text-xs text-blue-100">Kattints a kártyákra a működő példákért!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 1: Szerkesztési egységek -->
+            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-3 border-b border-gray-100 pb-3">
+                    <div class="w-9 h-9 rounded-lg bg-blue-50 text-[#185abd] flex items-center justify-center font-bold text-lg">1</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Szerkesztési egységek</h3>
+                        <p class="text-xs text-gray-500">A Word dokumentum hierarchikus felépítése a legkisebbtől a legnagyobb egységig.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Karakter -->
+                    <div class="p-4 rounded-lg border border-gray-200 bg-slate-50 hover:border-blue-300 transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase text-blue-600 bg-blue-100 px-2 py-0.5 rounded">1. egység</span>
+                            <i class="fa-solid fa-font text-blue-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800">Karakter</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            A legkisebb önálló szerkesztési egység. Magában foglalja a betűket, számokat, írásjeleket és a szóközöket.
+                        </p>
+                        <div class="bg-white p-2.5 rounded border border-gray-200 text-xs font-mono text-gray-700">
+                            <span class="text-gray-400">Példa:</span> <span class="bg-yellow-200 px-1 rounded font-bold">A</span>, <span class="bg-yellow-200 px-1 rounded font-bold">9</span>, <span class="bg-yellow-200 px-1 rounded font-bold">?</span>, <span class="bg-yellow-200 px-1 rounded font-bold">&nbsp;</span>
+                            <div class="mt-1 text-[11px] text-gray-500 font-sans">Formázás: betűtípus, méret, szín, félkövér stílus.</div>
+                        </div>
+                    </div>
+
+                    <!-- Bekezdés -->
+                    <div class="p-4 rounded-lg border border-blue-200 bg-blue-50/50 hover:border-blue-400 transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase text-blue-700 bg-blue-200 px-2 py-0.5 rounded">2. egység</span>
+                            <i class="fa-solid fa-paragraph text-blue-700"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800">Bekezdés</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            Két <kbd class="bg-gray-200 px-1 rounded border">Enter</kbd> leütése közötti szövegrész. Egyetlen szóból vagy akár egyetlen üres sorból is állhat!
+                        </p>
+                        <div class="bg-white p-2.5 rounded border border-blue-200 text-xs text-gray-700">
+                            <span class="text-gray-400 font-mono">Példa:</span> Ez egy teljes bekezdés.<span class="text-blue-600 font-bold">¶</span>
+                            <div class="mt-1 text-[11px] text-gray-500">Formázás: igazítás, behúzás, sorköz, térköz, szegély.</div>
+                        </div>
+                    </div>
+
+                    <!-- Szakasz -->
+                    <div class="p-4 rounded-lg border border-gray-200 bg-slate-50 hover:border-blue-300 transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase text-blue-600 bg-blue-100 px-2 py-0.5 rounded">3. egység</span>
+                            <i class="fa-solid fa-file-lines text-blue-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800">Szakasz</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            A dokumentum olyan része, amely eltérő oldalelrendezéssel (pl. álló/fekvő tájolás, hasábok, fejlécek) rendelkezhet.
+                        </p>
+                        <div class="bg-white p-2.5 rounded border border-gray-200 text-xs text-gray-700">
+                            <span class="text-gray-400">Példa:</span> Szakasz törése (Következő oldal / Folyamatos).
+                            <div class="mt-1 text-[11px] text-gray-500">Formázás: fekvő lap beillesztése álló oldal közé.</div>
+                        </div>
+                    </div>
+
+                    <!-- Dokumentum -->
+                    <div class="p-4 rounded-lg border border-gray-200 bg-slate-50 hover:border-blue-300 transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase text-blue-600 bg-blue-100 px-2 py-0.5 rounded">4. egység</span>
+                            <i class="fa-solid fa-file-word text-blue-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800">Dokumentum</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            A teljes szöveges fájl (Word fájl, pl. .docx). Tartalmazza az összes szakaszt, bekezdést és stílust.
+                        </p>
+                        <div class="bg-white p-2.5 rounded border border-gray-200 text-xs text-gray-700">
+                            <span class="text-gray-400">Példa:</span> Beszámoló.docx
+                            <div class="mt-1 text-[11px] text-gray-500">Formázás: dokumentumtémák, alapértelmezett stílusok.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: Nem nyomtatható karakterek -->
+            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200 shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-lg bg-blue-50 text-[#185abd] flex items-center justify-center font-bold text-lg">2</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">Nem nyomtatható karakterek</h3>
+                            <p class="text-xs text-gray-500">Segédjelek, amelyek csak a képernyőn látszanak, de nyomtatásban nem jelennek meg.</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleCardNPC()" class="self-start sm:self-auto px-3 py-1.5 bg-blue-50 text-[#185abd] border border-blue-200 rounded-lg text-xs font-semibold hover:bg-blue-100 transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-eye"></i>
+                        <span id="npc-toggle-card-label">Szerkesztőkarakterek megjelenítése</span>
+                    </button>
+                </div>
+
+                <!-- Table of non-printing symbols -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-start space-x-3">
+                        <span class="text-lg font-bold text-[#185abd] bg-white w-8 h-8 rounded border flex items-center justify-center shrink-0">¶</span>
+                        <div>
+                            <span class="font-bold text-gray-800">Bekezdésjel (Enter)</span>
+                            <p class="text-gray-600 text-[11px] mt-0.5">Új bekezdést hoz létre. A bekezdés formázási beállításait ez a rejtett jel tárolja!</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-start space-x-3">
+                        <span class="text-lg font-bold text-[#2b579a] bg-white w-8 h-8 rounded border flex items-center justify-center shrink-0">•</span>
+                        <div>
+                            <span class="font-bold text-gray-800">Szóköz (Space)</span>
+                            <p class="text-gray-600 text-[11px] mt-0.5">A szavak közötti távolságot jelöli. Egy kis pontként látható közöttük.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-start space-x-3">
+                        <span class="text-lg font-bold text-[#d9381e] bg-white w-8 h-8 rounded border flex items-center justify-center shrink-0">°</span>
+                        <div>
+                            <span class="font-bold text-gray-800">Nem törhető szóköz (Ctrl+Shift+Szóköz)</span>
+                            <p class="text-gray-600 text-[11px] mt-0.5">Megakadályozza, hogy két szó elváljon a sor végén (pl. "5 km", "kb. 100").</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-start space-x-3">
+                        <span class="text-lg font-bold text-[#008272] bg-white w-8 h-8 rounded border flex items-center justify-center shrink-0">➔</span>
+                        <div>
+                            <span class="font-bold text-gray-800">Tabulátor (Tab)</span>
+                            <p class="text-gray-600 text-[11px] mt-0.5">A szövegkurzort a következő tabulátorponthoz lépteti. Nyílként jelenik meg.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-start space-x-3">
+                        <span class="text-lg font-bold text-[#b4009e] bg-white w-8 h-8 rounded border flex items-center justify-center shrink-0">↵</span>
+                        <div>
+                            <span class="font-bold text-gray-800">Soremelés / sorváltás (Shift+Enter)</span>
+                            <p class="text-gray-600 text-[11px] mt-0.5">Új sort kezd <span class="italic">ugyanazon</span> a bekezdésen belül. Nem nyit új bekezdést.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-start space-x-3">
+                        <span class="text-lg font-bold text-gray-700 bg-white w-8 h-8 rounded border flex items-center justify-center shrink-0">📄</span>
+                        <div>
+                            <span class="font-bold text-gray-800">Oldalváltás (Ctrl+Enter)</span>
+                            <p class="text-gray-600 text-[11px] mt-0.5">A szövegkurzort közvetlenül a következő oldal tetejére helyezi át.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Example Card -->
+                <div class="p-4 bg-slate-100 rounded-lg border border-gray-300 space-y-2">
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wide">Élő minta:</span>
+                    <div id="npc-sample-box" class="p-4 bg-white rounded border border-gray-200 text-sm font-sans text-gray-800 leading-relaxed">
+                        A szövegszerkesztés során fontos a pontos munkavégzés. A nem törhető szóköz megakadályozza a hibás elválasztást. Shift+Enter alkalmazásával sorváltás ugyanazon a bekezdésen belül maradunk.
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: Margók -->
+            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-3 border-b border-gray-100 pb-3">
+                    <div class="w-9 h-9 rounded-lg bg-blue-50 text-[#185abd] flex items-center justify-center font-bold text-lg">3</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Margók</h3>
+                        <p class="text-xs text-gray-500">A papír széle és a szövegtükör közötti nyomtatási védőtávolságok.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                    <!-- Text explanation -->
+                    <div class="space-y-3 text-xs text-gray-600 lg:col-span-2">
+                        <p class="text-sm text-gray-700 font-medium">
+                            A margók határozzák meg a papírlap nyomtatható területét. A legfontosabb margótípusok és alapfogalmak:
+                        </p>
+                        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <li class="bg-gray-50 p-2.5 rounded border border-gray-200">
+                                <strong class="text-gray-800 block">Felső és alsó margó:</strong> A lap tetejétől és aljától tartott távolság (alapértelmezés szerint 2,5 cm).
+                            </li>
+                            <li class="bg-gray-50 p-2.5 rounded border border-gray-200">
+                                <strong class="text-gray-800 block">Bal és jobb margó:</strong> A lap bal és jobb szélétől mért távolság (alapértelmezés szerint 2,5 cm).
+                            </li>
+                            <li class="bg-gray-50 p-2.5 rounded border border-gray-200">
+                                <strong class="text-gray-800 block">Kötésbeni margó (Gutter):</strong> Extra védősáv a bal, felső vagy belső oldalon, amely megakadályozza, hogy a fűzés, bekötés vagy spirálozás eltakarja a szöveget.
+                            </li>
+                            <li class="bg-gray-50 p-2.5 rounded border border-gray-200">
+                                <strong class="text-gray-800 block">Szövegtükör:</strong> A margók által határolt belső hasznos nyomtatási terület, amelyen belül a szöveg, táblázatok és képek elhelyezkednek.
+                            </li>
+                            <li class="bg-gray-50 p-2.5 rounded border border-gray-200 sm:col-span-2">
+                                <strong class="text-gray-800 block">Tükörmargó:</strong> Kétoldalas nyomtatásnál a belső és külső margók szimmetrikus beállítása (pl. könyveknél és kiadványoknál).
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Interactive Diagram -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-gray-200 flex flex-col items-center">
+                        <span class="text-xs font-bold text-gray-600 mb-2">Margók elhelyezkedése (A4 lap)</span>
+                        <div class="w-48 h-60 bg-white border-2 border-gray-400 rounded shadow-md relative p-6 flex flex-col justify-between">
+                            <!-- Top Margin indicator -->
+                            <div class="absolute top-0 left-0 right-0 h-6 bg-red-100/60 border-b border-red-300 flex items-center justify-center text-[10px] text-red-700 font-bold">Felső margó</div>
+                            <!-- Bottom Margin indicator -->
+                            <div class="absolute bottom-0 left-0 right-0 h-6 bg-red-100/60 border-t border-red-300 flex items-center justify-center text-[10px] text-red-700 font-bold">Alsó margó</div>
+                            <!-- Left Margin indicator with Gutter note -->
+                            <div class="absolute top-6 bottom-6 left-0 w-6 bg-blue-100/60 border-r border-blue-300 flex items-center justify-center text-[9px] text-blue-700 font-bold [writing-mode:vertical-lr]">Bal / kötésbeni</div>
+                            <!-- Right Margin indicator -->
+                            <div class="absolute top-6 bottom-6 right-0 w-6 bg-blue-100/60 border-l border-blue-300 flex items-center justify-center text-[9px] text-blue-700 font-bold [writing-mode:vertical-lr]">Jobb</div>
+
+                            <!-- Text Content area (Szövegtükör) -->
+                            <div class="m-2 bg-green-50 border border-dashed border-green-400 h-full rounded p-1 text-[8px] text-gray-500 overflow-hidden leading-tight">
+                                <span class="font-bold text-green-800 block">Szövegtükör</span>
+                                A bekezdések és képek ezen a zöld szaggatott vonallal jelölt hasznos területen belül helyezkednek el.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: Bekezdésigazítások -->
+            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-3 border-b border-gray-100 pb-3">
+                    <div class="w-9 h-9 rounded-lg bg-blue-50 text-[#185abd] flex items-center justify-center font-bold text-lg">4</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Bekezdésigazítások</h3>
+                        <p class="text-xs text-gray-500">A szöveg elhelyezkedése a bal és jobb oldali margók között.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Balra -->
+                    <div class="border rounded-lg p-4 bg-slate-50 hover:bg-white hover:shadow-md transition space-y-2">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <span class="font-bold text-sm text-gray-800">Balra igazított</span>
+                            <i class="fa-solid fa-align-left text-[#185abd]"></i>
+                        </div>
+                        <p class="text-xs text-gray-600">A szöveg a bal margóhoz igazodik. A jobb széle egyenetlen. Ez az alapértelmezett beállítás.</p>
+                        <div class="p-2 bg-white border rounded text-[11px] text-gray-700 text-left font-serif leading-snug">
+                            Ez a bekezdés balra van igazítva. A bal margónál a szöveg eleje egy vonalat képez.
+                        </div>
+                    </div>
+
+                    <!-- Középre -->
+                    <div class="border rounded-lg p-4 bg-slate-50 hover:bg-white hover:shadow-md transition space-y-2">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <span class="font-bold text-sm text-gray-800">Középre igazított</span>
+                            <i class="fa-solid fa-align-center text-[#185abd]"></i>
+                        </div>
+                        <p class="text-xs text-gray-600">Minden sor a margók közötti felezővonalhoz igazodik. Címeknél, okleveleknél és verseknél használatos.</p>
+                        <div class="p-2 bg-white border rounded text-[11px] text-gray-700 text-center font-serif leading-snug">
+                            Cím vagy verssor<br>középre rendezett<br>esztétikus blokk
+                        </div>
+                    </div>
+
+                    <!-- Jobbra -->
+                    <div class="border rounded-lg p-4 bg-slate-50 hover:bg-white hover:shadow-md transition space-y-2">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <span class="font-bold text-sm text-gray-800">Jobbra igazított</span>
+                            <i class="fa-solid fa-align-right text-[#185abd]"></i>
+                        </div>
+                        <p class="text-xs text-gray-600">A szöveg a jobb margóhoz illeszkedik. Dátumoknál, fejléc-adatoknál vagy aláírásoknál alkalmazható.</p>
+                        <div class="p-2 bg-white border rounded text-[11px] text-gray-700 text-right font-serif leading-snug">
+                            Szolnok, <span id="current-date-display"></span><br>Gipsz Jakab s.k.
+                        </div>
+                    </div>
+
+                    <!-- Sorkizárt -->
+                    <div class="border rounded-lg p-4 bg-slate-50 hover:bg-white hover:shadow-md transition space-y-2">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <span class="font-bold text-sm text-gray-800">Sorkizárt</span>
+                            <i class="fa-solid fa-align-justify text-[#185abd]"></i>
+                        </div>
+                        <p class="text-xs text-gray-600">A Word automatikusan megnöveli a szóközöket, így a szöveg mindkét margóhoz pontosan simul (könyv-stílus).</p>
+                        <div class="p-2 bg-white border rounded text-[11px] text-gray-700 text-justify font-serif leading-snug">
+                            Ez a bekezdés sorkizárt. Mindkét széle egyenes, esztétikusabb elrendezést nyújtva.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 5: Behúzások -->
+            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-3 border-b border-gray-100 pb-3">
+                    <div class="w-9 h-9 rounded-lg bg-blue-50 text-[#185abd] flex items-center justify-center font-bold text-lg">5</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Behúzások és a vonalzó</h3>
+                        <p class="text-xs text-gray-500">A bekezdés széleinek beljebb tolása a margókhoz képest</p>
+                    </div>
+                </div>
+
+                <!-- Word Ruler Diagram Explanation -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                    <span class="text-xs font-bold text-gray-700 uppercase">A Word vonalzó jelölői (Homokóra ikon):</span>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                        <div class="bg-white p-3 rounded border border-gray-200 flex space-x-2">
+                            <span class="text-blue-600 font-bold text-lg">▼</span>
+                            <div>
+                                <strong class="text-gray-800 block">Első sor behúzása</strong>
+                                <p class="text-gray-500 text-[11px]">Csak a bekezdés legelső sorát tolja beljebb (klasszikus bekezdéskezdés).</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-3 rounded border border-gray-200 flex space-x-2">
+                            <span class="text-blue-600 font-bold text-lg">▲</span>
+                            <div>
+                                <strong class="text-gray-800 block">Függő behúzás</strong>
+                                <p class="text-gray-500 text-[11px]">Az első sor helyben marad, de a 2. sortól kezdve a többi sor beljebb lép.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-3 rounded border border-gray-200 flex space-x-2">
+                            <span class="text-blue-600 font-bold text-lg">■</span>
+                            <div>
+                                <strong class="text-gray-800 block">Bal oldali behúzás</strong>
+                                <p class="text-gray-500 text-[11px]">A teljes bekezdést egyszerre tolja el a bal margótól (téglalap ikon).</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-3 rounded border border-gray-200 flex space-x-2">
+                            <span class="text-blue-600 font-bold text-lg">▲</span>
+                            <div>
+                                <strong class="text-gray-800 block">Jobb oldali behúzás</strong>
+                                <p class="text-gray-500 text-[11px]">A bekezdés jobb szélét korlátozza beljebb a jobb margótól (pl. idézeteknél).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 6: Térköz és sorköz -->
+            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-3 border-b border-gray-100 pb-3">
+                    <div class="w-9 h-9 rounded-lg bg-blue-50 text-[#185abd] flex items-center justify-center font-bold text-lg">6</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Térköz és sorköz</h3>
+                        <p class="text-xs text-gray-500">A sorok és a bekezdések közötti függőleges távolságok szabályozása.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Térköz -->
+                    <div class="border rounded-lg p-4 bg-slate-50 space-y-3">
+                        <div class="flex items-center space-x-2 border-b pb-2">
+                            <i class="fa-solid fa-arrows-up-down text-[#185abd]"></i>
+                            <h4 class="font-bold text-gray-800 text-sm">Bekezdés térköze (Spacing)</h4>
+                        </div>
+                        <p class="text-xs text-gray-600">
+                            A bekezdések <span class="font-semibold text-gray-800">előtt</span> és <span class="font-semibold text-gray-800">után</span> hagyott üres távolság (pontokban mérve, pl. 6 pt, 12 pt).
+                        </p>
+                        <div class="bg-amber-50 p-2.5 rounded border border-amber-200 text-xs text-amber-800">
+                            <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+                            <strong>Fontos szabály:</strong> címek és bekezdések egymástól eltávolításához NE üres Entereket használj, hanem állíts be bekezdés előtti/utáni térközt!
+                        </div>
+                    </div>
+
+                    <!-- Sorköz -->
+                    <div class="border rounded-lg p-4 bg-slate-50 space-y-3">
+                        <div class="flex items-center space-x-2 border-b pb-2">
+                            <i class="fa-solid fa-bars text-[#185abd]"></i>
+                            <h4 class="font-bold text-gray-800 text-sm">Sorköz (Line Spacing)</h4>
+                        </div>
+                        <p class="text-xs text-gray-600">
+                            Egyazon bekezdés egymás alatti sorai közötti távolság.
+                        </p>
+                        <ul class="text-xs text-gray-700 space-y-1 font-mono">
+                            <li>• <strong>1,0 (Szimpla):</strong> alapértelmezett szoros sorköz.</li>
+                            <li>• <strong>1,15:</strong> modern, könnyen olvasható dokumentum sorköz.</li>
+                            <li>• <strong>1,5 sor:</strong> hivatalos dokumentumoknál elvárt sorköz.</li>
+                            <li>• <strong>Dupla (2,0):</strong> szakdolgozatok, kéziratok elvárása.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 7 & 8: Listakezelés & Szegélyek -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Listakezelés -->
+                <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-3 border-b border-gray-100 pb-3">
+                        <div class="w-9 h-9 rounded-lg bg-blue-50 text-[#185abd] flex items-center justify-center font-bold text-lg">7</div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">Listakezelés</h3>
+                            <p class="text-xs text-gray-500">Felsorolások, számozások és többszintű listák.</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                            <span class="font-bold text-gray-800 block mb-1"><i class="fa-solid fa-list-ul text-blue-600 mr-1"></i> Felsorolás (Bullets)</span>
+                            <p class="text-gray-600 mb-2">Sorrend nélküli elemekhez (szimbólumok, pöttyök, pipák). Rendezetlen lista.</p>
+                            <ul class="list-disc list-inside text-gray-700 space-y-0.5 font-sans">
+                                <li>Első tétel</li>
+                                <li>Második tétel</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                            <span class="font-bold text-gray-800 block mb-1"><i class="fa-solid fa-list-ol text-blue-600 mr-1"></i> Számozás (Numbering)</span>
+                            <p class="text-gray-600 mb-2">Sorrendiség esetén (1., A., I. típusú számozások). Rendezett lista</p>
+                            <ol class="list-decimal list-inside text-gray-700 space-y-0.5 font-sans">
+                                <li>Előkészítés</li>
+                                <li>Végrehajtás</li>
+                            </ol>
+                        </div>
+
+                        <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                            <span class="font-bold text-gray-800 block mb-1"><i class="fa-solid fa-sitemap text-blue-600 mr-1"></i> Többszintű lista</span>
+                            <p class="text-gray-600 mb-2">A <kbd class="bg-white px-1 border rounded">Tab</kbd> billentyűvel mélyíthető, <kbd class="bg-white px-1 border rounded">Shift+Tab</kbd> gombbal léptethető vissza a szint.</p>
+                            <div class="font-sans text-gray-700 space-y-0.5 pl-2">
+                                <div>1. Fejezet</div>
+                                <div class="pl-4 text-gray-600">1.1. Alfejezet</div>
+                                <div class="pl-8 text-gray-500">1.1.a. Részlet</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Szegélyek használata -->
+                <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-3 border-b border-gray-100 pb-3">
+                        <div class="w-9 h-9 rounded-lg bg-blue-50 text-[#185abd] flex items-center justify-center font-bold text-lg">8</div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">Szegélyek és kitöltés</h3>
+                            <p class="text-xs text-gray-500">Bekezdések kiemelése keretekkel és háttérszínekkel.</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <p class="text-gray-600">
+                            A bekezdések köré tetszőleges oldali szegélyek (alsó, felső, körülvevő) helyezhetők el, változatos vonalstílussal és vastagsággal.
+                        </p>
+
+                        <!-- Example 1: Callout Box -->
+                        <div class="p-3 bg-blue-50 border-l-4 border-[#185abd] rounded-r">
+                            <span class="font-bold text-[#185abd] block">Bal oldali szegély kiemelés</span>
+                            <p class="text-gray-700 text-[11px] mt-0.5">Kiváló fontos megjegyzésekhez és tippekhez.</p>
+                        </div>
+
+                        <!-- Example 2: Full border box -->
+                        <div class="p-3 bg-gray-50 border border-gray-400 rounded text-center">
+                            <span class="font-bold text-gray-800">Körülvevő szegély</span>
+                            <p class="text-gray-600 text-[11px]">Dobozba zárja a teljes bekezdést.</p>
+                        </div>
+
+                        <!-- Example 3: Shading with custom background -->
+                        <div class="p-3 bg-amber-100 border border-amber-300 rounded font-serif">
+                            <span class="font-bold text-amber-900">Mintázat / mintás kitöltés</span>
+                            <p class="text-amber-800 text-[11px]">A bekezdés teljes háttérszínének beállítása (Shading).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 2: INTERACTIVE SANDBOX -->
+        <section id="tab-sandbox" class="hidden space-y-6">
+            
+            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-800">Interaktív bekezdés-szimulátor</h2>
+                    <p class="text-xs text-gray-500">Kísérletezz a beállításokkal és figyeld az élő Word dokumentum változását!</p>
+                </div>
+                
+                <button onclick="resetSandbox()" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition flex items-center space-x-1">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span>Alaphelyzet</span>
+                </button>
+            </div>
+
+            <!-- Main Interactive Editor Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Controls Sidebar (Left Column) -->
+                <div class="lg:col-span-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-5 text-xs">
+                    
+                    <!-- Alignment Control -->
+                    <div class="space-y-2">
+                        <label class="font-bold text-gray-700 block">Bekezdés igazítása</label>
+                        <div class="grid grid-cols-4 gap-1 bg-gray-100 p-1 rounded-lg border border-gray-200">
+                            <button onclick="setSandboxAlign('left')" id="align-btn-left" class="py-1.5 rounded text-center bg-white shadow-sm font-semibold text-[#185abd]">
+                                <i class="fa-solid fa-align-left block mb-0.5"></i>Balra
+                            </button>
+                            <button onclick="setSandboxAlign('center')" id="align-btn-center" class="py-1.5 rounded text-center hover:bg-white/50 text-gray-700">
+                                <i class="fa-solid fa-align-center block mb-0.5"></i>Középre
+                            </button>
+                            <button onclick="setSandboxAlign('right')" id="align-btn-right" class="py-1.5 rounded text-center hover:bg-white/50 text-gray-700">
+                                <i class="fa-solid fa-align-right block mb-0.5"></i>Jobbra
+                            </button>
+                            <button onclick="setSandboxAlign('justify')" id="align-btn-justify" class="py-1.5 rounded text-center hover:bg-white/50 text-gray-700">
+                                <i class="fa-solid fa-align-justify block mb-0.5"></i>Sorkizárt
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Indents Control -->
+                    <div class="space-y-3 pt-2 border-t border-gray-100">
+                        <label class="font-bold text-gray-700 block">Behúzások (cm)</label>
+                        
+                        <div>
+                            <div class="flex justify-between text-gray-600 mb-1">
+                                <span>Első sor behúzása:</span>
+                                <span id="val-first-indent" class="font-mono font-bold text-blue-700">0 cm</span>
+                            </div>
+                            <input type="range" id="input-first-indent" min="0" max="4" step="0.5" value="0" oninput="updateSandbox()" class="w-full accent-[#185abd]">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-gray-600 mb-1">
+                                <span>Bal oldali behúzás:</span>
+                                <span id="val-left-indent" class="font-mono font-bold text-blue-700">0 cm</span>
+                            </div>
+                            <input type="range" id="input-left-indent" min="0" max="4" step="0.5" value="0" oninput="updateSandbox()" class="w-full accent-[#185abd]">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-gray-600 mb-1">
+                                <span>Jobb oldali behúzás:</span>
+                                <span id="val-right-indent" class="font-mono font-bold text-blue-700">0 cm</span>
+                            </div>
+                            <input type="range" id="input-right-indent" min="0" max="4" step="0.5" value="0" oninput="updateSandbox()" class="w-full accent-[#185abd]">
+                        </div>
+                    </div>
+
+                    <!-- Spacings Control -->
+                    <div class="space-y-3 pt-2 border-t border-gray-100">
+                        <label class="font-bold text-gray-700 block">Sorköz és térköz</label>
+
+                        <div>
+                            <div class="flex justify-between text-gray-600 mb-1">
+                                <span>Sorköz (sornyitás):</span>
+                                <span id="val-line-height" class="font-mono font-bold text-blue-700">1.15</span>
+                            </div>
+                            <select id="select-line-height" onchange="updateSandbox()" class="w-full p-1.5 border rounded bg-gray-50 text-xs">
+                                <option value="1.0">1,0 (Szimpla)</option>
+                                <option value="1.15" selected>1,15 (Normál)</option>
+                                <option value="1.5">1,5 (Másfél)</option>
+                                <option value="2.0">2,0 (Dupla)</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-gray-600 block mb-1">Térköz előtte (pt):</label>
+                                <input type="number" id="input-space-before" value="0" min="0" max="36" step="6" onchange="updateSandbox()" class="w-full p-1.5 border rounded bg-gray-50 text-xs">
+                            </div>
+                            <div>
+                                <label class="text-gray-600 block mb-1">Térköz utána (pt):</label>
+                                <input type="number" id="input-space-after" value="8" min="0" max="36" step="6" onchange="updateSandbox()" class="w-full p-1.5 border rounded bg-gray-50 text-xs">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Border and Background -->
+                    <div class="space-y-3 pt-2 border-t border-gray-100">
+                        <label class="font-bold text-gray-700 block">Szegély és háttér</label>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-gray-600 block mb-1">Szegély stílusa:</label>
+                                <select id="select-border-style" onchange="updateSandbox()" class="w-full p-1.5 border rounded bg-gray-50 text-xs">
+                                    <option value="none">Nincs szegély</option>
+                                    <option value="left">Bal oldali sáv</option>
+                                    <option value="box">Körülvevő keret</option>
+                                    <option value="top-bottom">Alsó-felső vonal</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-gray-600 block mb-1">Háttérszín:</label>
+                                <select id="select-bg-color" onchange="updateSandbox()" class="w-full p-1.5 border rounded bg-gray-50 text-xs">
+                                    <option value="transparent">Nincs (Fehér)</option>
+                                    <option value="bg-blue-50">Világoskék</option>
+                                    <option value="bg-yellow-50">Sárga kiemelés</option>
+                                    <option value="bg-gray-100">Szürke blokk</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Toggle non-printing characters -->
+                    <div class="pt-2 border-t border-gray-100">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="check-sandbox-npc" onchange="updateSandbox()" class="rounded text-[#185abd] focus:ring-blue-500">
+                            <span class="font-semibold text-gray-700">Szerkesztőkarakterek (¶) mutatása</span>
+                        </label>
+                    </div>
+
+                </div>
+
+                <!-- Live Word Page View (Right Column) -->
+                <div class="lg:col-span-8 space-y-3">
+                    
+                    <!-- Simulated Word Ruler Header -->
+                    <div class="bg-white border border-gray-300 rounded-t-lg p-2 flex items-center justify-between shadow-sm">
+                        <div class="flex items-center space-x-2 text-xs font-mono text-gray-500">
+                            <i class="fa-solid fa-ruler text-gray-400"></i>
+                            <span>Vonalzó szimuláció (0 - 16 cm)</span>
+                        </div>
+                        <span class="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold">A4 lapméret</span>
+                    </div>
+
+                    <!-- Ruler visual scale -->
+                    <div class="bg-gray-200 border-x border-b border-gray-300 h-6 relative ruler-bg text-[9px] font-mono text-gray-600 flex items-end px-4">
+                        <span class="absolute left-4 bottom-0">0</span>
+                        <span class="absolute left-1/4 bottom-0">4 cm</span>
+                        <span class="absolute left-2/4 bottom-0">8 cm</span>
+                        <span class="absolute left-3/4 bottom-0">12 cm</span>
+                        <span class="absolute right-4 bottom-0">16 cm</span>
+                    </div>
+
+                    <!-- Interactive Document Canvas -->
+                    <div class="word-page rounded-b-lg p-8 sm:p-12 space-y-6">
+                    <!-- Dynamic Document Canvas -->
+                    <div class="word-page rounded-b-lg p-8 sm:p-12 space-y-6">
+                        
+                        <!-- Fixed Context Paragraph before -->
+                        <p class="text-xs text-gray-400 select-none border-b border-gray-100 pb-2">
+                            [Előző bekezdés... Ez a szövegrész a margón belül helyezkedik el normál beállításokkal.]
+                        </p>
+
+                        <!-- Dynamic Target Paragraph -->
+                        <div id="sandbox-target-paragraph" class="transition-all duration-150 p-2 text-gray-800 text-sm leading-relaxed font-sans">
+                            <!-- Text generated via JS -->
+                        </div>
+
+                        <!-- Fixed Context Paragraph after -->
+                        <p class="text-xs text-gray-400 select-none border-t border-gray-100 pt-2">
+                            [Következő bekezdés... Figyeld meg, hogy a fenti bekezdés térköze hogyan tolja el ezt a sort.]
+                        </p>
+
+                    </div>
+
+                    <!-- Dynamic Properties Indicator Bar -->
+                    <div class="bg-slate-800 text-slate-200 p-3 rounded-lg text-xs font-mono space-y-1">
+                        <div class="font-bold text-blue-300 flex items-center justify-between">
+                            <span><i class="fa-solid fa-code mr-1"></i>Generált formázási tulajdonságok:</span>
+                            <!--<span class="text-[10px] text-gray-400">CSS szimuláció</span>-->
+                        </div>
+                        <div id="sandbox-code-preview" class="text-gray-300">
+                            text-align: left; line-height: 1.15; margin-left: 0cm;
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- TAB 3: QUIZ -->
+        <section id="tab-quiz" class="hidden max-w-3xl mx-auto space-y-6">
+            
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-center space-y-3">
+                <span class="bg-blue-100 text-[#185abd] text-xs font-bold px-3 py-1 rounded-full uppercase">Tudásellenőrzés</span>
+                <h2 class="text-2xl font-bold text-gray-800">Bekezdésformázási kvíz</h2>
+                <p class="text-xs text-gray-600">Teszteld a tudásodat a Word bekezdésformázási funkcióiról!</p>
+                <div>
+                    <button onclick="resetAndRenderQuiz()" class="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#185abd] border border-blue-200 rounded-lg text-xs font-semibold transition inline-flex items-center space-x-1.5">
+                        <i class="fa-solid fa-shuffle"></i>
+                        <span>5 új kérdés sorsolása</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="quiz-container" class="space-y-4">
+                <!-- Question cards generated via JavaScript -->
+            </div>
+
+            <div class="text-center pt-4">
+                <button onclick="checkQuizResults()" class="px-6 py-2.5 bg-[#185abd] hover:bg-[#103f8a] text-white font-semibold rounded-lg shadow transition">
+                    Eredmény kiértékelése
+                </button>
+            </div>
+
+            <div id="quiz-score-box" class="hidden bg-green-50 border border-green-300 rounded-xl p-6 text-center space-y-2">
+                <i class="fa-solid fa-trophy text-4xl text-yellow-500 mb-2"></i>
+                <h3 id="quiz-score-title" class="text-xl font-bold text-green-900"></h3>
+                <p id="quiz-score-desc" class="text-sm text-green-700"></p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer / Status bar (Word Status Bar visual style) -->
+    <footer class="bg-[#185abd] text-white text-xs py-1.5 px-4 mt-auto border-t border-blue-800">
+        <!--
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <span>Oldal: 1 / 1</span>
+                <span class="hidden sm:inline">Szószám: 482</span>
+                <span>Nyelv: Magyar</span>
+            </div>
+            <div class="flex items-center space-x-3">
+                <span class="hidden sm:inline">Nagyítás: 100%</span>
+                <i class="fa-solid fa-file-word text-sm"></i>
+            </div>
+        </div>
+        -->
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        /* State management */
+        let state = {
+            alignment: 'left',
+            firstIndent: 0,
+            leftIndent: 0,
+            rightIndent: 0,
+            lineHeight: '1.15',
+            spaceBefore: 0,
+            spaceAfter: 8,
+            borderStyle: 'none',
+            bgColor: 'transparent',
+            showNPC: false,
+            cardNPC: false
+        };
+
+        /* Sample text for Sandbox */
+        const baseSandboxText = "A Microsoft Word szövegszerkesztőben a bekezdésformázás határozza meg a dokumentumok professzionális megjelenését. Megfelelő igazításokkal, behúzásokkal és jól megválasztott sorközzel a hosszabb tananyagok és hivatalos levelek is könnyen olvashatóvá válnak.";
+
+        /* Initializer */
+        window.onload = function() {
+            updateCurrentDate();
+            updateSandbox();
+            resetAndRenderQuiz();
+        };
+
+        /* Automatically update current date in Hungarian format */
+        function updateCurrentDate() {
+            const dateSpan = document.getElementById('current-date-display');
+            if (dateSpan) {
+                const now = new Date();
+                let formattedDate = now.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
+                if (!formattedDate.endsWith('.')) {
+                    formattedDate += '.';
+                }
+                dateSpan.innerText = formattedDate;
+            }
+        }
+
+        /* Switch tabs */
+        function switchTab(tabId) {
+            document.getElementById('tab-infographic').classList.add('hidden');
+            document.getElementById('tab-sandbox').classList.add('hidden');
+            document.getElementById('tab-quiz').classList.add('hidden');
+
+            document.getElementById('btn-tab-infographic').className = "px-3 py-1.5 rounded-md font-medium transition text-white hover:bg-white/10";
+            document.getElementById('btn-tab-sandbox').className = "px-3 py-1.5 rounded-md font-medium transition text-white hover:bg-white/10";
+            document.getElementById('btn-tab-quiz').className = "px-3 py-1.5 rounded-md font-medium transition text-white hover:bg-white/10";
+
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('btn-tab-' + tabId).className = "px-3 py-1.5 rounded-md font-medium transition bg-white text-[#185abd] shadow-sm";
+        }
+
+        /* Toggle global Non-Printing Characters */
+        function toggleGlobalNPC() {
+            state.showNPC = !state.showNPC;
+            document.getElementById('check-sandbox-npc').checked = state.showNPC;
+            
+            const btn = document.getElementById('global-npc-btn');
+            if(state.showNPC) {
+                btn.classList.add('bg-blue-100', 'border-blue-400');
+            } else {
+                btn.classList.remove('bg-blue-100', 'border-blue-400');
+            }
+
+            toggleCardNPC(state.showNPC);
+            updateSandbox();
+        }
+
+        /* Toggle Card NPC */
+        function toggleCardNPC(forceState) {
+            if(typeof forceState === 'boolean') {
+                state.cardNPC = forceState;
+            } else {
+                state.cardNPC = !state.cardNPC;
+            }
+
+            const box = document.getElementById('npc-sample-box');
+            const label = document.getElementById('npc-toggle-card-label');
+
+            if(state.cardNPC) {
+                label.innerText = "Szerkesztőkarakterek elrejtése";
+                box.innerHTML = `A<span class="npc-space"> </span>szövegszerkesztés<span class="npc-space"> </span>során<span class="npc-space"> </span>fontos<span class="npc-space"> </span>a<span class="npc-space"> </span>pontos<span class="npc-space"> </span>munkavégzés.<span class="npc-space"> </span>A<span class="npc-space"> </span>nem<span class="npc-nbsp">&nbsp;</span>törhető<span class="npc-space"> </span>szóköz<span class="npc-space"> </span>megakadályozza<span class="npc-space"> </span>a<span class="npc-space"> </span>hibás<span class="npc-space"> </span>elválasztást.<span class="npc-line"></span><br>Shift+Enter<span class="npc-space"> </span>alkalmazásával<span class="npc-space"> </span>a<span class="npc-space"> </span>sorváltás<span class="npc-space"> </span>egyedülálló.<span class="npc-para"></span>`;
+            } else {
+                label.innerText = "Szerkesztőkarakterek megjelenítése";
+                box.innerText = "A szövegszerkesztés során fontos a pontos munkavégzés. A nem törhető szóköz megakadályozza a hibás elválasztást. Shift+Enter alkalmazásával a sorváltás egyetlen bekezdésen belül marad.";
+            }
+        }
+
+        /* Quick Ribbon alignment shortcut */
+        function applyAlignment(align) {
+            switchTab('sandbox');
+            setSandboxAlign(align);
+        }
+
+        /* Set alignment in Sandbox */
+        function setSandboxAlign(align) {
+            state.alignment = align;
+            ['left', 'center', 'right', 'justify'].forEach(a => {
+                const btn = document.getElementById(`align-btn-${a}`);
+                if(a === align) {
+                    btn.className = "py-1.5 rounded text-center bg-white shadow-sm font-semibold text-[#185abd]";
+                } else {
+                    btn.className = "py-1.5 rounded text-center hover:bg-white/50 text-gray-700";
+                }
+            });
+            updateSandbox();
+        }
+
+        /* Update Sandbox Live Preview */
+        function updateSandbox() {
+            // Read inputs
+            state.firstIndent = parseFloat(document.getElementById('input-first-indent').value);
+            state.leftIndent = parseFloat(document.getElementById('input-left-indent').value);
+            state.rightIndent = parseFloat(document.getElementById('input-right-indent').value);
+            state.lineHeight = document.getElementById('select-line-height').value;
+            state.spaceBefore = document.getElementById('input-space-before').value;
+            state.spaceAfter = document.getElementById('input-space-after').value;
+            state.borderStyle = document.getElementById('select-border-style').value;
+            state.bgColor = document.getElementById('select-bg-color').value;
+            state.showNPC = document.getElementById('check-sandbox-npc').checked;
+
+            // Display values
+            document.getElementById('val-first-indent').innerText = state.firstIndent + " cm";
+            document.getElementById('val-left-indent').innerText = state.leftIndent + " cm";
+            document.getElementById('val-right-indent').innerText = state.rightIndent + " cm";
+            document.getElementById('val-line-height').innerText = state.lineHeight;
+
+            // Apply styles to paragraph element
+            const target = document.getElementById('sandbox-target-paragraph');
+            
+            // CSS Alignment
+            target.style.textAlign = state.alignment;
+            target.style.lineHeight = state.lineHeight;
+            
+            // Indents conversion (1cm approx 24px)
+            const pxPerCm = 24;
+            target.style.textIndent = (state.firstIndent * pxPerCm) + "px";
+            target.style.paddingLeft = (state.leftIndent * pxPerCm) + "px";
+            target.style.paddingRight = (state.rightIndent * pxPerCm) + "px";
+
+            // Spacing
+            target.style.marginTop = state.spaceBefore + "pt";
+            target.style.marginBottom = state.spaceAfter + "pt";
+
+            // Reset borders & bg
+            target.className = "transition-all duration-150 p-3 text-gray-800 text-sm font-sans " + state.bgColor;
+            
+            if(state.borderStyle === 'left') {
+                target.classList.add('border-l-4', 'border-[#185abd]');
+            } else if(state.borderStyle === 'box') {
+                target.classList.add('border-2', 'border-gray-800', 'rounded');
+            } else if(state.borderStyle === 'top-bottom') {
+                target.classList.add('border-y-2', 'border-[#185abd]');
+            }
+
+            // Render text with NPC symbols if enabled
+            if(state.showNPC) {
+                target.innerHTML = baseSandboxText.split(" ").join('<span class="npc-space"> </span>') + '<span class="npc-para"></span>';
+            } else {
+                target.innerText = baseSandboxText;
+            }
+
+            // Update Code Snippet Preview
+            const codePreview = document.getElementById('sandbox-code-preview');
+            if (codePreview) {
+                codePreview.innerText = 
+                    `igazítás: ${state.alignment} | sorköz: ${state.lineHeight} | első sor behúzás: ${state.firstIndent}cm | bal behúzás: ${state.leftIndent}cm | térköz utána: ${state.spaceAfter}pt`;
+            }
+        }
+
+        /* Reset Sandbox controls */
+        function resetSandbox() {
+            document.getElementById('input-first-indent').value = 0;
+            document.getElementById('input-left-indent').value = 0;
+            document.getElementById('input-right-indent').value = 0;
+            document.getElementById('select-line-height').value = "1.15";
+            document.getElementById('input-space-before').value = 0;
+            document.getElementById('input-space-after').value = 8;
+            document.getElementById('select-border-style').value = "none";
+            document.getElementById('select-bg-color').value = "transparent";
+            document.getElementById('check-sandbox-npc').checked = false;
+            setSandboxAlign('left');
+        }
+
+        /* Full Quiz Questions Pool (20 questions total) */
+        const quizPool = [
+            {
+                q: "Melyik billentyűkombinációval hozhatsz létre sorváltást úgy, hogy NEM nyitsz új bekezdést?",
+                options: ["Enter", "Shift + Enter", "Ctrl + Enter", "Alt + Enter"],
+                correct: 1,
+                explain: "A Shift + Enter soremelést végez ugyanazon a bekezdésen belül."
+            },
+            {
+                q: "Mi tárolja egy bekezdés formázási beállításait a Wordben?",
+                options: ["A margó elrendezése", "A legelső betű", "A bekezdés végén található rejtett bekezdésjel (¶)", "A fájl kiterjesztése"],
+                correct: 2,
+                explain: "A bekezdés végi ¶ jel hordozza az adott bekezdés összes egyedi formázását."
+            },
+            {
+                q: "Mire való a nem törhető szóköz (Ctrl + Shift + Szóköz)?",
+                options: ["Megakadályozza, hogy két összefüggő szó elváljon a sor végén", "Törli a szóközt a szavak közül", "Új oldalt nyit", "Növeli a betűméretet"],
+                correct: 0,
+                explain: "Például a '10 km' vagy 'Kovács úr' kifejezéseknél megakadályozza a szám és a mértékegység külön sorba kerülését."
+            },
+            {
+                q: "Melyik behúzás típus esetén marad helyben az első sor, miközben a 2. sortól kezdve a többi sor beljebb lép?",
+                options: ["Első sor behúzása", "Bal oldali behúzás", "Függő behúzás", "Jobb oldali behúzás"],
+                correct: 2,
+                explain: "Ez a függő behúzás (Hanging indent), amelyet gyakran használnak irodalomjegyzékeknél."
+            },
+            {
+                q: "Mi a helyes eljárás két bekezdés vagy egy cím elkülönítésére?",
+                options: ["Több üres Enter billentyű leütése egymás után", "Bekezdés előtti és utáni térköz (Spacing) beállítása", "Tabulátorok beillesztése", "Betűméret megnövelése"],
+                correct: 1,
+                explain: "A tiszta és professzionális szerkesztés alapelve a térköz beállítása a felesleges Enterek helyett."
+            },
+            {
+                q: "Mi a legkisebb önálló szerkesztési egység a Wordben?",
+                options: ["Karakter", "Bekezdés", "Szó", "Szakasz"],
+                correct: 0,
+                explain: "A karakter a legkisebb egység (betűk, számok, írásjelek, szóközök)."
+            },
+            {
+                q: "Mi a különbség a bekezdés és a szakasz között?",
+                options: ["A szakasz eltérő oldalbeállításokat (pl. fekvő tájolást, hasábokat) is tartalmazhat", "A bekezdés több oldalból áll, a szakasz egyetlen sorból", "Nincs különbség köztük", "A bekezdésben nem lehet betűtípust váltani"],
+                correct: 0,
+                explain: "A szakasz teszi lehetővé az eltérő tájolást, margókat vagy fejléceket egyetlen dokumentumon belül."
+            },
+            {
+                q: "Mi a kötésbeni margó (Gutter) szerepe?",
+                options: ["Extra helyet biztosít a lap szélén a fűzésnek vagy spirálozásnak", "Képeket illeszt be a margóra", "Megduplázza a betűméretet", "Kikapcsolja a nyomtatást"],
+                correct: 0,
+                explain: "A kötésbeni margó megakadályozza, hogy a bekötés vagy fűzés eltakarja a szöveget."
+            },
+            {
+                q: "Mi a szövegtükör?",
+                options: ["A margók által határolt belső, hasznos nyomtatási terület", "A dokumentum tükrözött képe", "A fejléc és lábléc összege", "Egy grafikai effektus"],
+                correct: 0,
+                explain: "A szövegtükör a margókon belüli hasznos tartalomterület, ahová a bekezdések és képek kerülnek."
+            },
+            {
+                q: "Melyik billentyűparancssal szúrható be kényszerített oldalváltás?",
+                options: ["Ctrl + Enter", "Shift + Enter", "Alt + Enter", "Tab + Enter"],
+                correct: 0,
+                explain: "A Ctrl + Enter azonnal a következő oldal tetejére helyezi az utána következő szöveget."
+            },
+            {
+                q: "Mit jelent a sorkizárt (justify) igazítás?",
+                options: ["A Word megnöveli a szóközöket, így a szöveg mindkét margóhoz pontosan illeszkedik", "A szöveg csak a bal margóhoz igazodik", "A szöveg középre rendeződik", "A szöveg csupán nagybetűkből áll"],
+                correct: 0,
+                explain: "A sorkizárás mindkét oldalon egyenes margóvonalat eredményez, mint a könyvekben és újságokban."
+            },
+            {
+                q: "A Word vonalzóján melyik ikon szolgál a teljes bekezdés bal oldali behúzására?",
+                options: ["Az alsó téglalap ikon", "A felső lefelé mutató háromszög", "A jobb oldali háromszög", "A szürke kör ikon"],
+                correct: 0,
+                explain: "Az alsó téglalap ikon egyszerre tolja el az első sort és a többi sort is a bal margótól."
+            },
+            {
+                q: "Melyik sorköz beállítás használatos leggyakrabban hivatalos dokumentumokban esetleg szakdolgozatokban?",
+                options: ["1,5 sor", "4,0 sor", "0,5 sor", "10,0 sor"],
+                correct: 0,
+                explain: "Az 1,5-ös sorköz az egyik legszélesebb körben elfogadott szabvány a jó olvashatóság érdekében."
+            },
+            {
+                q: "Hogyan léptethető beljebb egy többszintű lista szintje szerkesztés közben?",
+                options: ["A Tab billentyűvel", "Az Enter billentyűvel", "A Backspace billentyűvel", "A Space billentyűvel"],
+                correct: 0,
+                explain: "A Tab billentyű leütésével az adott listaelem egy szinttel beljebb lép (pl. 1. -> 1.1.)."
+            },
+            {
+                q: "Hogyan léptethető vissza (kijjebb) egy többszintű lista szintje?",
+                options: ["Shift + Tab billentyűkombinációval", "Ctrl + Tab billentyűkombinációval", "Alt + Enter billentyűkombinációval", "Esc billentyűvel"],
+                correct: 0,
+                explain: "A Shift + Tab billentyűkombináció visszalépteti a listaelemet a felette lévő szintre."
+            },
+            {
+                q: "Milyen szimbólum jelöli a nem nyomtatható tabulátor karaktert bekapcsolt szerkesztőkaraktereknél?",
+                options: ["Egy jobbra mutató nyíl (➔)", "Egy kék pont (•)", "Egy bekezdésjel (¶)", "Egy kettőskereszt (#)"],
+                correct: 0,
+                explain: "A tabulátort egy jobbra mutató nyíl jelzi a képernyőn."
+            },
+            {
+                q: "Mire szolgál a bekezdés körüli szegély (Border) és kitöltés (Shading)?",
+                options: ["Kiemelt információk vagy blokkok vizuális keretezésére és háttérszínezésére", "A nyomtató patronjának tisztítására", "A helyesírás-ellenőrző kikapcsolására", "A dokumentum jelszavas védelmére"],
+                correct: 0,
+                explain: "A szegélyek és háttérszínek esztétikus kiemelést biztosítanak a fontos szövegrészeknek."
+            },
+            {
+                q: "Milyen szimbólum jelenik meg a szóközök helyén a szerkesztőkarakterek bekapcsolásakor?",
+                options: ["Egy középső pont (•)", "Egy hullámvonal (~)", "Egy felkiáltójel (!)", "Egy nyilacska (➔)"],
+                correct: 0,
+                explain: "A szóközöket kis pontok jelölik a szavak között."
+            },
+            {
+                q: "Melyik állítás IGAZ a bekezdés előtti és utáni térközre (Spacing)?",
+                options: ["Pontokban (pt) mérjük és pontosan szabályozza a bekezdések közötti távolságot", "Csak cm-ben állítható be", "A betűk közötti távolságot módosítja", "A margók szélességét változtatja meg"],
+                correct: 0,
+                explain: "A térközt pt-ben adjuk meg (pl. 6 pt, 12 pt), így elkerülhetők a felesleges Enter-ek."
+            },
+            {
+                q: "Milyen margóbeállítást érdemes használni kétoldalas könyv vagy kiadvány nyomtatásakor?",
+                options: ["Tükörmargót", "Csupán jobb oldali margót", "Hullámos margót", "Negatív margót"],
+                correct: 0,
+                explain: "A tükörmargó biztosítja a belső és külső margók szimmetrikus elrendezését a páros és páratlan oldalakon."
+            }
+        ];
+
+        let currentQuizQuestions = [];
+
+        /* Randomly select 5 distinct questions from pool */
+        function resetAndRenderQuiz() {
+            const scoreBox = document.getElementById('quiz-score-box');
+            if (scoreBox) scoreBox.classList.add('hidden');
+
+            // Shuffle pool copy
+            const shuffled = [...quizPool].sort(() => 0.5 - Math.random());
+            currentQuizQuestions = shuffled.slice(0, 5);
+            renderQuiz();
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            if (!container) return;
+
+            container.innerHTML = currentQuizQuestions.map((item, idx) => `
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-3">
+                    <h4 class="font-bold text-gray-800 text-sm">${idx + 1}. ${item.q}</h4>
+                    <div class="space-y-1.5 text-xs">
+                        ${item.options.map((opt, oIdx) => `
+                            <label class="flex items-center space-x-2.5 p-2 rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                <input type="radio" name="quiz-q-${idx}" value="${oIdx}" class="text-[#185abd] focus:ring-blue-500">
+                                <span class="text-gray-700">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div id="quiz-explain-${idx}" class="hidden text-xs p-2.5 rounded bg-blue-50 border border-blue-200 text-blue-900 font-medium">
+                        ${item.explain}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function checkQuizResults() {
+            let score = 0;
+            currentQuizQuestions.forEach((item, idx) => {
+                const selected = document.querySelector(`input[name="quiz-q-${idx}"]:checked`);
+                const explainBox = document.getElementById(`quiz-explain-${idx}`);
+                if (!explainBox) return;
+
+                explainBox.classList.remove('hidden');
+
+                if(selected && parseInt(selected.value) === item.correct) {
+                    score++;
+                    explainBox.className = "text-xs p-2.5 rounded bg-green-50 border border-green-300 text-green-900 font-medium";
+                    explainBox.innerHTML = "✓ Helyes válasz! " + item.explain;
+                } else {
+                    explainBox.className = "text-xs p-2.5 rounded bg-red-50 border border-red-300 text-red-900 font-medium";
+                    explainBox.innerHTML = "✗ Helytelen! " + item.explain;
+                }
+            });
+
+            const scoreBox = document.getElementById('quiz-score-box');
+            if (scoreBox) {
+                scoreBox.classList.remove('hidden');
+                document.getElementById('quiz-score-title').innerText = `Eredmény: ${score} / ${currentQuizQuestions.length} pont`;
+                
+                if(score === currentQuizQuestions.length) {
+                    document.getElementById('quiz-score-desc').innerText = "Gratulálunk! Kiválóan ismered a Word bekezdésformázási funkcióit!";
+                } else {
+                    document.getElementById('quiz-score-desc').innerText = "Tekintsd át a helytelen válaszok magyarázatait vagy próbáld ki a beállításokat a Gyakorlótéren!";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
